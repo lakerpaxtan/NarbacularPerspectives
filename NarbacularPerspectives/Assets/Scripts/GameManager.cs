@@ -7,7 +7,10 @@ public class GameManager : MonoBehaviour
 
 
     public GameObject flareGun;
-  
+    public GameObject playerObject;
+    
+    Portal testPortal;
+    Portal testPortal2;
 
     
 
@@ -16,15 +19,17 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         flareGun.SetActive(true);
-        Portal testPortal = new Portal(new Vector2(4,4), new Vector2(0,0), new Vector3(2,2,2), new Vector3(0,0,1));
-        Portal testPortal2 = new Portal(new Vector2(4,4), new Vector2(0,0), new Vector3(-5,2,2), new Vector3(0,0,1));
+        testPortal = new Portal(new Vector2(4,4), new Vector2(0,0), new Vector3(-8f,2, 14), new Vector3(0,0,-1), playerObject, "testOne");
+        testPortal2 = new Portal(new Vector2(4,4), new Vector2(0,0), new Vector3(8f,2,-16), new Vector3(0,0,1), playerObject, "testTwo");
        
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        Portal.pairPortals(testPortal, testPortal2);
+        testPortal.updateCameraRelativeToPlayer();
+        testPortal2.updateCameraRelativeToPlayer();
     }
 
     
