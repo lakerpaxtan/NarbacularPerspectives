@@ -18,6 +18,8 @@ public class Portal
     private GameObject playerObject; 
 
     private string name;
+    private RenderTexture cameraTexture;
+    public static Shader portalShader;
     
 
 
@@ -29,9 +31,13 @@ public class Portal
         normalVec = normal;
         playerObject = player;
         name = str;
+
+        cameraTexture = new RenderTexture(Screen.width, Screen.height, 0);
+        portalShader = Shader.Find("Unlit/PortalShader");
+
         createPortalBoundaries();
         createPortalCamera();
-
+        
     }
 
     
@@ -68,16 +74,45 @@ public class Portal
         
     }
 
-
-
-
-
     public static void pairPortals(Portal portal1, Portal portal2){
         portal1.isPaired = true;
         portal2.isPaired = true; 
 
         portal1.otherPortal = portal2;
-        portal2.otherPortal = portal1; 
+        portal2.otherPortal = portal1;
+
+        setTargetTexture(portal1, portal2);
+    }
+
+    private static void setTargetTexture(Portal portal1, Portal portal2) {
+        portal1.actualPlane.GetComponent<Renderer>().material.shader = portalShader;
+        portal2.actualPlane.GetComponent<Renderer>().material.shader = portalShader;
+
+        portal1.portalCam.GetComponent<Camera>().targetTexture = portal1.cameraTexture;
+        portal2.portalCam.GetComponent<Camera>().targetTexture = portal2.cameraTexture;
+
+        portal1.portalCam.GetComponent<Camera>().Render();
+        portal2.portalCam.GetComponent<Camera>().Render();
+
+        portal1.actualPlane.GetComponent<Renderer>().material.SetTexture("_MainTex", portal1.cameraTexture);
+        portal2.actualPlane.GetComponent<Renderer>().material.SetTexture("_MainTex", portal2.cameraTexture);
+    }
+
+    public void updateNearClipPlane() {
+        Camera cam = otherPortal.portalCam.GetComponent<Camera>();
+        Vector3 cameraPosition = cam.transform.position;
+        Vector3 quadPosition = actualPlane.transform.position;
+        float distToQuad = (quadPosition - cameraPosition).magnitude;
+        cam.nearClipPlane = distToQuad;
+    }
+
+    private void updateCameraTexture() {
+       // actualPlane.GetComponent<Renderer>().material.shader.
+    }
+
+    public void update() {
+        updateCameraRelativeToPlayer();
+        updateNearClipPlane();
     }
 
 }

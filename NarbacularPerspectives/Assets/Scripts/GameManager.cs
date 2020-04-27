@@ -28,8 +28,14 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         Portal.pairPortals(testPortal, testPortal2);
-        testPortal.updateCameraRelativeToPlayer();
-        testPortal2.updateCameraRelativeToPlayer();
+        //testPortal.updateCameraRelativeToPlayer();
+        //testPortal2.updateCameraRelativeToPlayer();
+
+        testPortal.update();
+        testPortal2.update();
+
+        //testPortal.setTexture();
+        //testPortal2.setTexture();
     }
 
     

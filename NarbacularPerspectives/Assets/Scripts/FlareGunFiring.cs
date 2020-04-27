@@ -44,7 +44,7 @@ public class FlareGunFiring : MonoBehaviour
     }
 
     void fireFlareGunSounds(){
-        firingSound.Play();
+        //firingSound.Play();
     }
 
     
