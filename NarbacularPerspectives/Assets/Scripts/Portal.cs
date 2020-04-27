@@ -62,9 +62,8 @@ public class Portal
             this.portalCam.transform.position = this.otherPortal.actualPlane.transform.TransformPoint(relativePos);
             this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.right, 180);
 
-            //Debug.Log("player" + playerObject.transform.position);
-            //Debug.Log("relative" + relativePos);
-            //Debug.Log(this.name + this.portalCam.transform.position);
+            // Set the rotation of the portal camera to the rotation vector of the player
+            this.portalCam.transform.rotation = playerObject.transform.rotation;
         }
         
     }
