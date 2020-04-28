@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using UnityStandardAssets.Utility;
@@ -42,9 +43,21 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private bool m_Jumping;
         private AudioSource m_AudioSource;
 
+
+        // NEW -- ANIMATION 
+        private Animator anim;
+        private AnimatorStateInfo currentBaseState;
+        public float animSpeed = 1.5f;
+        float restTimer = 5000f;
+        Vector3 forward;
+
         // Use this for initialization
         private void Start()
         {
+            // NEW -- ANIMATION
+            anim = GetComponent<Animator>();
+            anim.speed = animSpeed;                             // Animator
+
             m_CharacterController = GetComponent<CharacterController>();
             m_Camera = Camera.main;
             m_OriginalCameraPosition = m_Camera.transform.localPosition;
@@ -94,6 +107,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void FixedUpdate()
         {
+            forward = transform.forward;
+
             float speed;
             GetInput(out speed);
             // always move along the camera forward as it is the direction that it being aimed at
@@ -108,29 +123,89 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_MoveDir.x = desiredMove.x*speed;
             m_MoveDir.z = desiredMove.z*speed;
 
-
             if (m_CharacterController.isGrounded)
             {
                 m_MoveDir.y = -m_StickToGroundForce;
 
                 if (m_Jump)
                 {
+                    // NEW -- ANIMATION
+                    StartCoroutine(SlowJump());
                     m_MoveDir.y = m_JumpSpeed;
-                    PlayJumpSound();
-                    m_Jump = false;
-                    m_Jumping = true;
+                    //PlayJumpSound();
+                    //m_Jump = false;
+                    //m_Jumping = true;
                 }
             }
             else
             {
+
                 m_MoveDir += Physics.gravity*m_GravityMultiplier*Time.fixedDeltaTime;
             }
             m_CollisionFlags = m_CharacterController.Move(m_MoveDir*Time.fixedDeltaTime);
+            // NEW -- ANIMATION
+            if (m_MoveDir.x != 0 || m_MoveDir.z != 0)
+            {
+                restTimer = 5000f;
+
+                if (m_IsWalking)
+                {
+                    if (Vector3.Dot(forward, m_MoveDir) < 0)
+                    {
+                        anim.SetFloat("Speed", -2);
+
+                    }
+                    else
+                    {
+                        anim.SetFloat("Speed", 2);
+                    }
+                }
+                else
+                {
+                    if (Vector3.Dot(forward, m_MoveDir) < 0)
+                    {
+                        anim.SetFloat("Speed", -5);
+                    }
+                    else
+                    {
+                        anim.SetFloat("Speed", 5);
+                    }
+                }
+            } else if (!anim.GetBool("Jump") || !m_Jumping)
+            {
+                anim.SetFloat("Speed", 0);
+                restTimer--;
+                if (restTimer < 0)
+                {
+                    restTimer = 5000f;
+                    anim.SetBool("Rest", true);
+                }
+            }
 
             ProgressStepCycle(speed);
             UpdateCameraPosition(speed);
 
             m_MouseLook.UpdateCursorLock();
+        }
+
+        // NEW -- ANIMATION
+        IEnumerator SlowJump()
+        {
+            anim.SetFloat("Speed", .2f);
+            anim.SetBool("Jump", true);
+            m_Jumping = true;
+
+            yield return null;
+            m_Jump = false;
+            m_MoveDir.y = m_JumpSpeed;
+            PlayJumpSound();
+
+            for (int i = 0; i < 10; i++)
+            {
+                yield return null;
+            }
+            anim.SetBool("Jump", false);
+            anim.SetFloat("Speed", 0f);
         }
 
 
@@ -236,6 +311,12 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void RotateView()
         {
+            // NEW -- ANIMATION
+            //if (m_MoveDir.x == 0 && m_MoveDir.z == 0)
+            //{
+            //    anim.SetFloat("Direction", m_Camera.transform.rotation.y);
+
+            //}
             m_MouseLook.LookRotation (transform, m_Camera.transform);
         }
 

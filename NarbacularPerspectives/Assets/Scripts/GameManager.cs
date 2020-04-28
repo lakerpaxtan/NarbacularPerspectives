@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-
-
     public GameObject flareGun;
     public GameObject playerObject;
     
@@ -19,9 +17,9 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         flareGun.SetActive(true);
-        testPortal = new Portal(new Vector2(4,4), new Vector2(0,0), new Vector3(-8f,2, 14), new Vector3(0,0,-1), playerObject, "testOne");
-        testPortal2 = new Portal(new Vector2(4,4), new Vector2(0,0), new Vector3(8f,2,-16), new Vector3(0,0,1), playerObject, "testTwo");
-       
+        testPortal = new Portal(new Vector2(4, 4), new Vector2(0, 0), new Vector3(-8f, 2, 14), new Vector3(0, 0, -1), playerObject, "testOne");
+        testPortal2 = new Portal(new Vector2(4, 4), new Vector2(0, 0), new Vector3(8f, 2, -16), new Vector3(0, 0, 1), playerObject, "testTwo");
+
     }
 
     // Update is called once per frame

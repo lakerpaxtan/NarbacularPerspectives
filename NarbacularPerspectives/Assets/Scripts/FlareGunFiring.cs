@@ -20,7 +20,6 @@ public class FlareGunFiring : MonoBehaviour
         //Checks every frame to see if you pressed fire (left click) while flare gun is enabled
         if (Input.GetButtonDown("FireGun")){
             fireFlareGun();
-            Debug.Log("firing flare gun");
         }
     }
 
