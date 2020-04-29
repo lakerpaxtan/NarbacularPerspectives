@@ -42,7 +42,6 @@ public class PortalCreation : MonoBehaviour
             portalShape.SetActive(true);
             if (Physics.Raycast(transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit, Mathf.Infinity))
             {
-                Debug.DrawLine(transform.position, hit.point, Color.red);
                 norm = hit.normal.normalized;
                 portalShapeLine.transform.position = hit.point + norm * offset; 
                 //portalShapeLine.transform.rotation = hit.collider.transform.rotation;

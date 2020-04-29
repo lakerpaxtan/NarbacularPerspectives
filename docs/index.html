@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <style>
@@ -23,434 +23,556 @@
 
 <body>
 
-<h1 align="middle">CS 184: Computer Graphics and Imaging</h1>
-<h1 align="middle">Narbacular Perspective(s) [Proposal]</h1>
-<h2 align="middle">Paxtan Laker, Austin Davis, Emily Nguyen</h2>
+    <h1 align="middle">CS 184: Computer Graphics and Imaging</h1>
+    <h1 align="middle">Narbacular Perspective(s) [Proposal]</h1>
+    <h2 align="middle">Paxtan Laker, Austin Davis, Emily Nguyen</h2>
 
-<br><br>
+    <br /><br />
     <div align="middle">
-  <table style="width=100%">
-    <tr>
-      <td>
-        <img src="images/cutePortal.jpg" align="middle" width="400px"/>
-      </td>
-    </tr>
-    <br>
-    
-  </table>
-</div>
-<br><br>
+        <table style="width=100%">
+            <tr>
+                <td>
+                    <img src="images/cutePortal.jpg" align="middle" width="400px" />
+                </td>
+            </tr>
+            <br />
 
-<h2 align="left">Overview</h2>
-<p style="font-size:13px">
+        </table>
+    </div>
+    <br /><br />
 
-Imagine Valve’s Portal, but users are allowed to create portals of different sizes? What do you think would happen when you stepped through the larger portal and exited the smaller portal? <br><br>
+    <h2 align="left">Overview</h2>
+    <p style="font-size:13px">
 
-We are striving to make a VR demo that answers this question by creating a system in Unity to allow users to create portals of varying sizes that will scale the size of objects passed through them (relative to the ratios of their area). We imagine that this system can create unique puzzle-like scenarios where users have to use portals for teleportation and perspective shifts simultaneously. We also find the implementation implications incredibly intriguing from a computer graphics perspective and want to put our Unity / CS 184 skills to the test. <br><br>
+        Imagine Valve’s Portal, but users are allowed to create portals of different sizes? What do you think would happen when you stepped through the larger portal and exited the smaller portal? <br /><br />
+
+        We are striving to make a VR demo that answers this question by creating a system in Unity to allow users to create portals of varying sizes that will scale the size of objects passed through them (relative to the ratios of their area). We imagine that this system can create unique puzzle-like scenarios where users have to use portals for teleportation and perspective shifts simultaneously. We also find the implementation implications incredibly intriguing from a computer graphics perspective and want to put our Unity / CS 184 skills to the test. <br /><br />
 
 
     </p>
-    
-    
-
-
-<hr>
-    
-    
-    
-    
-<h2 align="left">Problem Description(s)</h2>
-    
-    
-    
-
-    
-
-<p style="font-size:13px">
-We are striving to put a modern twist on the classic concepts found in Valve’s Portal. Both from a graphics implementation and conceptual perspective, the idea of portals is incredibly intriguing. The main focus of this project will be to create a demo where the user can place multiple portals within the world through which they can place objects, or walk through themselves. However, we will be going a couple of steps further and allowing for the use of portals of different sizes, as well as making the demo playable in first person in VR. The idea behind having portals of different sizes is that the scale of whatever passes through the portal will be adjusted to match the difference in size from the original portal to the new one. <br><br>
-
-<b>We think this problem is important because it is really cool. Seriously though, this idea just sounds fun and intriguing. That's why we are doing it.</b> <br><br>
-    
-One difficult part of this project will be figuring out how to accurately and realistically map one side of the portal to the other. Another challenge will be to solve recursive portals. Honestly, this whole project is incredibly challenging because the implementation raises A LOT of questions. It would be really arrogant to claim that we already know what the most challenging part is before starting. There are SO MANY conceptual problems you can think of fairly immediately from a game engine perspective. (We've listed some below....)
- </p>  
-<ul style="font-size:13px">
-  <li>When an object is passing through the portal (halfway through) do we need two mesh representations spawned in the game worlds on both sides? Or is there some kind of clever way we can do shading and rendering tricks to translate half to one side of the portal and half to the other? 
-</li><br>
-  <li>When looking through portals that obscure one another, should we render infinitely through the portals (imagine a webcam pointed at the result of the webcam) ? </li><br>
-  <li>How do you implement ray casting through a portal? Unity has built in function for ray casting we will probably have to rewrite ourselves for this</li><br>
-  <li>Our stretch goal is to allow the user to turn any surface into a portal → I’m not sure where to even start with this one! </li><br>
-  <li>Can a user peer through or go through a portal of any size? We would have to figure out how to scale the user as they go through as well. </li>
-</ul>
-
-   
 
 
 
-        
 
-<hr>
-<h2 align="left">Our MVP (Plan)</h2>
+    <hr />
 
-<ul style="font-size:13px">
-  <li>Players should be able to interact in a virtual reality environment, create portals on command, and see and move through portals 
-    </li><br>
-    
-  <li>Working Portals in Unity that support teleportation and size-scaling for AT LEAST the player themself (specifics listed below)
-      
-    <ul style="font-size:13px"><br>
-      <li>Smooth transitions from one portal to the other
-    </li><br>
-      <li>The ability to see through portals  </li><br>
-      <li>The ability to raycast through the portals</li><br>
-      <li>The ability to walk through the poratls </li><br>
-      <li>The ability to create portals of any size (within our minimum - maximum constraint) anywhere </li><br>
-      <li>Some way of handling recursive portal rendering when they are obscuring each other</li><br>
-        <li>Figuring out how we want to handle the "backside" of a portal</li><br>
+
+
+
+    <h2 align="left">Problem Description(s)</h2>
+
+
+
+
+
+
+    <p style="font-size:13px">
+        We are striving to put a modern twist on the classic concepts found in Valve’s Portal. Both from a graphics implementation and conceptual perspective, the idea of portals is incredibly intriguing. The main focus of this project will be to create a demo where the user can place multiple portals within the world through which they can place objects, or walk through themselves. However, we will be going a couple of steps further and allowing for the use of portals of different sizes, as well as making the demo playable in first person in VR. The idea behind having portals of different sizes is that the scale of whatever passes through the portal will be adjusted to match the difference in size from the original portal to the new one. <br /><br />
+
+        <b>We think this problem is important because it is really cool. Seriously though, this idea just sounds fun and intriguing. That's why we are doing it.</b> <br /><br />
+
+        One difficult part of this project will be figuring out how to accurately and realistically map one side of the portal to the other. Another challenge will be to solve recursive portals. Honestly, this whole project is incredibly challenging because the implementation raises A LOT of questions. It would be really arrogant to claim that we already know what the most challenging part is before starting. There are SO MANY conceptual problems you can think of fairly immediately from a game engine perspective. (We've listed some below....)
+    </p>
+    <ul style="font-size:13px">
+        <li>
+            When an object is passing through the portal (halfway through) do we need two mesh representations spawned in the game worlds on both sides? Or is there some kind of clever way we can do shading and rendering tricks to translate half to one side of the portal and half to the other?
+        </li>
+        <br />
+        <li>When looking through portals that obscure one another, should we render infinitely through the portals (imagine a webcam pointed at the result of the webcam) ? </li>
+        <br />
+        <li>How do you implement ray casting through a portal? Unity has built in function for ray casting we will probably have to rewrite ourselves for this</li>
+        <br />
+        <li>Our stretch goal is to allow the user to turn any surface into a portal → I’m not sure where to even start with this one! </li>
+        <br />
+        <li>Can a user peer through or go through a portal of any size? We would have to figure out how to scale the user as they go through as well. </li>
     </ul>
-</li><br>
-    
-<li>Full VR integration along with some kind of locomotion that pairs well with the portals
-      
-    <ul style="font-size:13px"><br>
-      <li>The ability to deal with moving through portals that “don’t fit” the player
-
-    </li><br>
-      <li>The ability to potentially raycast through the portals to teleport (boring) 
- </li><br>
-      <li>Supports all relevant headsets</li><br>
-    </ul>
-</li><br>
-    
-    
-    
-</ul>
 
 
 
-<hr>
-    
-    
-    
-    
-<h2 align="left">Why we think we can accomplish these goals</h2>
+
+
+
+
+    <hr />
+    <h2 align="left">Our MVP (Plan)</h2>
 
     <ul style="font-size:13px">
-  <li>We believe this class has taught us enough of rendering to dive deeper into the Unity nitty gritty than we could before 
-</li><br>
-  <li>This project involves a lot of consideration of camera space/world space positions and translations like those we have already been doing in this class. </li><br>
-  <li>All three of us are facilitators for the VR Decal, so we don’t think the VR component of this project will be all that hard to do. While cool, VR is not the primary focus of the project because of this.</li><br>
-</ul>
+        <li>
+            Players should be able to interact in a virtual reality environment, create portals on command, and see and move through portals
+        </li>
+        <br />
 
-<hr>
-    
-    
-    
-    
-<h2 align="left">What we hope to deliver (stretch goals)</h2>
+        <li>
+            Working Portals in Unity that support teleportation and size-scaling for AT LEAST the player themself (specifics listed below)
+
+            <ul style="font-size:13px">
+                <br />
+                <li>
+                    Smooth transitions from one portal to the other
+                </li>
+                <br />
+                <li>The ability to see through portals  </li>
+                <br />
+                <li>The ability to raycast through the portals</li>
+                <br />
+                <li>The ability to walk through the poratls </li>
+                <br />
+                <li>The ability to create portals of any size (within our minimum - maximum constraint) anywhere </li>
+                <br />
+                <li>Some way of handling recursive portal rendering when they are obscuring each other</li>
+                <br />
+                <li>Figuring out how we want to handle the "backside" of a portal</li>
+                <br />
+            </ul>
+        </li>
+        <br />
+
+        <li>
+            Full VR integration along with some kind of locomotion that pairs well with the portals
+
+            <ul style="font-size:13px">
+                <br />
+                <li>
+                    The ability to deal with moving through portals that “don’t fit” the player
+
+                </li>
+                <br />
+                <li>
+                    The ability to potentially raycast through the portals to teleport (boring)
+                </li>
+                <br />
+                <li>Supports all relevant headsets</li>
+                <br />
+            </ul>
+        </li>
+        <br />
+
+
+
+    </ul>
+
+
+
+    <hr />
+
+
+
+
+    <h2 align="left">Why we think we can accomplish these goals</h2>
 
     <ul style="font-size:13px">
-  <li>The ability to transform any surface into a portal, rather than creating a portal in world space from scratch
-</li><br>
-  <li>A unique solution to the backside of the portal (this is kind of an unanswered questions)</li><br>
-  <li>Cool puzzle implementations to pair with our unique portal system</li><br>
-</ul>
-
-    
-<hr>
-    
-    
-    
-    
-<h2 align="left">How are we measuring?</h2>
-    
-  <p style="font-size:13px">
-There isn't really anything to measure. Do portals work? Does it run well enough to match most VR experiences? Is everything smooth? If yes to all of these ---> 100% <br><br>
- </p>  
-    
-
-<hr>
-    
-    
-    
-    
-<h2 align="left">Schedule</h2>
-  
-    
-<ul style="font-size:13px">
- <li>Week 1 (April 7th - 12th)
-      
-    <ul style="font-size:13px"><br>
-      <li>Create Project Proposal
-    </li><br>
-      <li>Submit Project Proposal </li><br>
-      <li>Wait for Answer</li><br>
+        <li>
+            We believe this class has taught us enough of rendering to dive deeper into the Unity nitty gritty than we could before
+        </li>
+        <br />
+        <li>This project involves a lot of consideration of camera space/world space positions and translations like those we have already been doing in this class. </li>
+        <br />
+        <li>All three of us are facilitators for the VR Decal, so we don’t think the VR component of this project will be all that hard to do. While cool, VR is not the primary focus of the project because of this.</li>
+        <br />
     </ul>
-</li><br>
-    
-     <li>Week 2 (April 12th - 19th)
-      
-    <ul style="font-size:13px"><br>
-      <li>Setting up a basic environment to test-create portals
 
-    </li><br>
-      <li>The ability to create variable size “portal gameobjects” (w/ no functionality) 
- </li><br>
-      <li>The ability to see through the portals</li><br>
+    <hr />
+
+
+
+
+    <h2 align="left">What we hope to deliver (stretch goals)</h2>
+
+    <ul style="font-size:13px">
+        <li>
+            The ability to transform any surface into a portal, rather than creating a portal in world space from scratch
+        </li>
+        <br />
+        <li>A unique solution to the backside of the portal (this is kind of an unanswered questions)</li>
+        <br />
+        <li>Cool puzzle implementations to pair with our unique portal system</li>
+        <br />
     </ul>
-</li><br>
 
-      <li>Week 3 (April 19th - 26th)
-      
-    <ul style="font-size:13px"><br>
-      <li>The ability to walk through the portals</li><br>
-      <li>Some kind of solution to having a "backside"
- </li><br>
-      <li>Some way of handling recursive portal rendering when they obscure one another</li><br>
+
+    <hr />
+
+
+
+
+    <h2 align="left">How are we measuring?</h2>
+
+    <p style="font-size:13px">
+        There isn't really anything to measure. Do portals work? Does it run well enough to match most VR experiences? Is everything smooth? If yes to all of these ---> 100% <br /><br />
+    </p>
+
+
+    <hr />
+
+
+
+
+    <h2 align="left">Schedule</h2>
+
+
+    <ul style="font-size:13px">
+        <li>
+            Week 1 (April 7th - 12th)
+
+            <ul style="font-size:13px">
+                <br />
+                <li>
+                    Create Project Proposal
+                </li>
+                <br />
+                <li>Submit Project Proposal </li>
+                <br />
+                <li>Wait for Answer</li>
+                <br />
+            </ul>
+        </li>
+        <br />
+
+        <li>
+            Week 2 (April 12th - 19th)
+
+            <ul style="font-size:13px">
+                <br />
+                <li>
+                    Setting up a basic environment to test-create portals
+
+                </li>
+                <br />
+                <li>
+                    The ability to create variable size “portal gameobjects” (w/ no functionality)
+                </li>
+                <br />
+                <li>The ability to see through the portals</li>
+                <br />
+            </ul>
+        </li>
+        <br />
+
+        <li>
+            Week 3 (April 19th - 26th)
+
+            <ul style="font-size:13px">
+                <br />
+                <li>The ability to walk through the portals</li>
+                <br />
+                <li>
+                    Some kind of solution to having a "backside"
+                </li>
+                <br />
+                <li>Some way of handling recursive portal rendering when they obscure one another</li>
+                <br />
+            </ul>
+        </li>
+        <br />
+
+        <li>
+            Week 4 (April 26th - May 3rd)
+
+            <ul style="font-size:13px">
+                <br />
+                <li>Setting up the final environment</li>
+                <br />
+                <li>
+                    Smooth transitions from one portal to the other, such as going halfway through the portal
+                </li>
+                <br />
+                <li>Milestone Deliverables due Tuesday April 28th, 11:59 PM</li>
+                <br />
+            </ul>
+        </li>
+        <br />
+
+        <li>
+            Week 5 (May 3rd - 12th)
+
+            <ul style="font-size:13px">
+                <br />
+                <li>Implement Full VR Integration</li>
+                <br />
+                <li>
+                    The ability to raycast through portals for VR locomotion
+                </li>
+                <br />
+                <li>Playtesting and Debugging</li>
+                <br />
+                <li>Final Deliverables due Tuesday, May 12th, 11:59PM</li>
+                <br />
+            </ul>
+
+        </li>
+
     </ul>
-</li><br>  
-    
-     <li>Week 4 (April 26th - May 3rd)
-      
-    <ul style="font-size:13px"><br>
-      <li>Setting up the final environment</li><br>
-      <li>Smooth transitions from one portal to the other, such as going halfway through the portal
- </li><br>
-      <li>Milestone Deliverables due Tuesday April 28th, 11:59 PM</li><br>
+
+    <hr />
+
+
+
+
+    <h2 align="left">Resources</h2>
+
+    <ul style="font-size:13px">
+        <li>
+            https://en.wikipedia.org/wiki/Portal_(video_game)
+        </li>
+        <br />
+        <li>
+            http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
+        </li>
+        <br />
+        <li>
+            https://www.youtube.com/watch?v=riijspB9DIQ
+        </li>
+        <br />
+        <li>
+            https://www.youtube.com/watch?v=_SmPR5mvH7w&t=321s
+
+        </li>
+        <br />
     </ul>
-</li><br>  
-    
-    <li>Week 5 (May 3rd - 12th)
-      
-    <ul style="font-size:13px"><br>
-      <li>Implement Full VR Integration</li><br>
-      <li>The ability to raycast through portals for VR locomotion
- </li><br>
-      <li>Playtesting and Debugging</li><br>
-        <li>Final Deliverables due Tuesday, May 12th, 11:59PM</li><br>
-    </ul>
-    
-</ul>
-    
-<hr>
-    
-    
-    
-    
-<h2 align="left">Resources</h2>
-    
-       <ul style="font-size:13px">
-  <li>https://en.wikipedia.org/wiki/Portal_(video_game)
-</li><br>
-  <li>http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
-</li><br>
-  <li>https://www.youtube.com/watch?v=riijspB9DIQ
-</li><br>
-    <li>https://www.youtube.com/watch?v=_SmPR5mvH7w&t=321s
 
-</li><br>
-</ul>
+    <br /><br />
 
-<br><br>
-
-<hr>
-<hr>
-<hr>
-<br>
+    <hr />
+    <hr />
+    <hr />
+    <br />
     <h1 align="middle">Narbacular Perspective(s) [Midway Checkpoint]</h1>
     <h2 align="left">Goals for Checkpoint</h2>
-<p style="font-size:13px">
+    <p style="font-size:13px">
 
-Our goals for this checkpoint were very distinct and specific because we had the luxury of understanding where the issues and bugs might happen for the beginning of the project. <br><br> 1. Setup the Unity Project and Github <br><br> 2. Create First person controller, gun, and basic scene for debugging <br><br> 3. Set up the portal classes, methods, and game management scripts for refinment later <br><br> 4. Implement Portal pairing, camera movement, and portal rendering <br><br> 5. Miscellaneous Touch-ups (Portal Creation / Modeling / Etc)<br><br>
+        Our goals for this checkpoint were very distinct and specific because we had the luxury of understanding where the issues and bugs might happen for the beginning of the project. <br /><br /> 1. Setup the Unity Project and Github <br /><br /> 2. Create First person controller, gun, and basic scene for debugging <br /><br /> 3. Set up the portal classes, methods, and game management scripts for refinment later <br /><br /> 4. Implement Portal pairing, camera movement, and portal rendering <br /><br /> 5. Modelling <br /><br /> 6. Portal Creation: Placement and Sizing<br /><br />
 
-Did we complete all these goals? Keep reading if you want to find out! (We are making this checkpoint website chronological for the purposes of videos and images we took along the way)
+        Did we complete all these goals? Keep reading if you want to find out! (We are making this checkpoint website chronological for the purposes of videos and images we took along the way)
     </p>
-<br><br>
+    <br /><br />
 
-<h2 align="left">1. Setup the Unity Project and Github</h2>
-<p style="font-size:13px">
+    <h2 align="left">1. Setup the Unity Project and Github</h2>
+    <p style="font-size:13px">
 
-Honestly there is nothing noteworthy to show here. Check out our github setup, unity project settings, and gitignore if you want to be really bored. <br><br>But we did it (yay? #quarantineCantStopMe) 
-    </p>
-
-<h2 align="left">2. Create First person controller, gun, and basic scene for debugging</h2>
-<p style="font-size:13px">
-
-So the first thing of substance we wanted to do was create the first person controller so we had some sort of reference when actually debugging for moving around the scene. Luckily we are part of the VR DeCal so we were able to steal the basic first person controller from a homework we designed a couple semesters ago (really it's just from Unity's packages). Our homework had slighlty different goals so we spent a bit playing with movement and shooting (we have a flare gun for some weird reason). <br><br>
-
-We decided on a gun with physical projectiles so that in the future when portals and working we can check that physics and momentum is conserved through it. We redesigned the bullet, added some sounds, and voila! A basic first person controller. The picture below shows the view of the player in the scene with the flare gun. We didn't take much video here of tinkering around because it was boring (also we might've just forgot --> sorry). 
-
-Before showing the picture, it's worth mentioning that the background is our first pass at a debugging scene for creating the portals. We eventually switch the layout because the layout in the scene provided made it kind of difficult to debug orientation in the scene. 
+        Honestly there is nothing noteworthy to show here. Check out our github setup, unity project settings, and gitignore if you want to be really bored. <br /><br />But we did it (yay? #quarantineCantStopMe)
     </p>
 
-<br><br>
+    <h2 align="left">2. Create First person controller, gun, and basic scene for debugging</h2>
+    <p style="font-size:13px">
+
+        So the first thing of substance we wanted to do was create the first person controller so we had some sort of reference when actually debugging for moving around the scene. Luckily we are part of the VR DeCal so we were able to steal the basic first person controller from a homework we designed a couple semesters ago (really it's just from Unity's packages). Our homework had slighlty different goals so we spent a bit playing with movement and shooting (we have a flare gun for some weird reason). <br /><br />
+
+        We decided on a gun with physical projectiles so that in the future when portals and working we can check that physics and momentum is conserved through it. We redesigned the bullet, added some sounds, and voila! A basic first person controller. The picture below shows the view of the player in the scene with the flare gun. We didn't take much video here of tinkering around because it was boring (also we might've just forgot --> sorry).
+
+        Before showing the picture, it's worth mentioning that the background is our first pass at a debugging scene for creating the portals. We eventually switch the layout because the layout in the scene provided made it kind of difficult to debug orientation in the scene.
+    </p>
+
+    <br /><br />
     <div align="middle">
-  <table style="width=100%">
-    <tr>
-      <td>
-        <img src="images/fpsOne.png" align="middle" width="400px"/>
-      </td>
-    </tr>
-    <br>
-    
-  </table>
-</div>
-<br><br>
+        <table style="width=100%">
+            <tr>
+                <td>
+                    <img src="images/fpsOne.png" align="middle" width="400px" />
+                </td>
+            </tr>
+            <br />
 
-<p style="font-size:13px">
+        </table>
+    </div>
+    <br /><br />
 
-After our first pass with the scene we decided we needed to redo the actual physical layout of the scene so there was some distinct nature to where each of our test portals were located. We needed them on slightly different axes and with different normals so that the testing was actually conclusive. We also wanted different colors and objects so we could know which side we were looking at without having to think too hard. Basically this is all just due diligence for when portal rendering starts getting all wonky. <br><br>
-    
-The results of the final scene is below. <br>
+    <p style="font-size:13px">
+
+        After our first pass with the scene we decided we needed to redo the actual physical layout of the scene so there was some distinct nature to where each of our test portals were located. We needed them on slightly different axes and with different normals so that the testing was actually conclusive. We also wanted different colors and objects so we could know which side we were looking at without having to think too hard. Basically this is all just due diligence for when portal rendering starts getting all wonky. <br /><br />
+
+        The results of the final scene is below. <br />
     </p>
 
 
-<br><br>
+    <br /><br />
     <div align="middle">
-  <table style="width=100%">
-    <tr>
-      <td>
-        <img src="images/fpsTwo.png" align="middle" width="400px"/>
-      </td>
-        <td>
-        <img src="images/fpsThree.png" align="middle" width="400px"/>
-      </td>
-    </tr>
-    <br>
-    
-  </table>
-</div>
-<br><br>
+        <table style="width=100%">
+            <tr>
+                <td>
+                    <img src="images/fpsTwo.png" align="middle" width="400px" />
+                </td>
+                <td>
+                    <img src="images/fpsThree.png" align="middle" width="400px" />
+                </td>
+            </tr>
+            <br />
 
-<p style="font-size:13px">
+        </table>
+    </div>
+    <br /><br />
 
-Also here is some demo pew pew for your viewing pleasure <br><br>
+    <p style="font-size:13px">
+
+        Also here is some demo pew pew for your viewing pleasure <br /><br />
     </p>
 
-
-    <div align="middle">
-  <table style="width=100%">
-    <tr>
-      <td>
-        <video width="640" height="480" controls>
-            <source src="images/fpsvidone.mp4" type="video/mp4">
-          </video>
-      </td>
-    </tr>
-    <br>
-    
-  </table>
-</div>
-<br><br>
-
-<h2 align="left">3. Set up the portal classes, methods, and game management scripts for refinment later</h2>   
- <p style="font-size:13px">
-
-This is almost all coding so no pretty pictures or videos for y'all here. Basically we just created the general API and abstraction for portal creation, pairing, and rendering. We didn't implement in detail here, but the basics are there (minus rendering). We also set up the game management script which is a staple for Unity development. It's basically the main function for Unity. It's where we create the first two portals by hand and do most of the debugging. Check out the Assets/Scripts folder if you want to visualize what's being talked about here. 
-    </p>
-
-<h2 align="left"> 4. Implement Portal pairing, camera movement, and portal rendering </h2>   
- <p style="font-size:13px">
-
-This part was definitely the most difficult and interesting. The first thing we had to do was figure out how we wanted the portals to work under the hood. There are about 1000 different ways you can do portals, but we decided to basically pursue a camera rendering route where each portal has a camera that follows it's respective paired portal using local coordinate translation. <br><br>
-     
-Suppose you are looking through Portal 1 at a 2 height, 3 width offset at a 60 degree angle (you = your fps model). For getting the correct camera view in respect to Portal 2, you need to translate these deltas to the other portal using local coordinates. Basically, you would want your paired camera to be at a 2 height, 3 width offset (and 60 degree angle) from Portal 2 with respect to the OPPOSITE normal. This gets into some weird math, but basically if you are in front of your Portal 1, you actually need your paired camera to be BEHIND portal 2 to get the correct viewpoint. This is a simple rotational matrix conversion, but it took a while to figure out and debug. <br><br>
-     
-Just to make sure we are on the same page --> Each portal is going to have a paired camera that is generally behind it's paired portal. I'm going to link some videos showcasing our progress on this below, but it's important to understand that we have these paired cameras so that we can basically emulate our character standing there and render what you would be seeing if you had "preemptively" gone through the portal and could see the other side. There is some image cropping, texture mapping, and rendering stuff related to this we have to talk about later, but ultimately that's the main idea. <br><br>
-
-The videos below are ordered in chronological development order so you can see some progress. (Generall through... Video One = Debugging one camera attached to the right portal | Video Two = Cameras attached to both portals | Video Three = Rotational perspective after finishing positional )
-    </p>
 
     <div align="middle">
-  <table style="width=100%">
-    <tr>
-      <td>
-        <video width="640" height="480" controls>
-            <source src="images/cameravidone.mp4" type="video/mp4">
-          </video>
-      </td>
-    </tr>
-    <br>
-    
-  </table>
-</div>
+        <table style="width=100%">
+            <tr>
+                <td>
+                    <video width="640" height="480" controls=controls>
+                        <source src="images/fpsvidone.mp4" type="video/mp4" />
+                    </video>
+                </td>
+            </tr>
+            <br />
 
+        </table>
+    </div>
+    <br /><br />
+
+    <h2 align="left">3. Set up the portal classes, methods, and game management scripts for refinment later</h2>
+    <p style="font-size:13px">
+
+        This is almost all coding so no pretty pictures or videos for y'all here. Basically we just created the general API and abstraction for portal creation, pairing, and rendering. We didn't implement in detail here, but the basics are there (minus rendering). We also set up the game management script which is a staple for Unity development. It's basically the main function for Unity. It's where we create the first two portals by hand and do most of the debugging. Check out the Assets/Scripts folder if you want to visualize what's being talked about here.
+    </p>
+
+    <h2 align="left"> 4. Implement Portal pairing, camera movement, and portal rendering </h2>
+    <p style="font-size:13px">
+
+        This part was definitely the most difficult and interesting. The first thing we had to do was figure out how we wanted the portals to work under the hood. There are about 1000 different ways you can do portals, but we decided to basically pursue a camera rendering route where each portal has a camera that follows it's respective paired portal using local coordinate translation. <br /><br />
+
+        Suppose you are looking through Portal 1 at a 2 height, 3 width offset at a 60 degree angle (you = your fps model). For getting the correct camera view in respect to Portal 2, you need to translate these deltas to the other portal using local coordinates. Basically, you would want your paired camera to be at a 2 height, 3 width offset (and 60 degree angle) from Portal 2 with respect to the OPPOSITE normal. This gets into some weird math, but basically if you are in front of your Portal 1, you actually need your paired camera to be BEHIND portal 2 to get the correct viewpoint. This is a simple rotational matrix conversion, but it took a while to figure out and debug. <br /><br />
+
+        Just to make sure we are on the same page --> Each portal is going to have a paired camera that is generally behind it's paired portal. I'm going to link some videos showcasing our progress on this below, but it's important to understand that we have these paired cameras so that we can basically emulate our character standing there and render what you would be seeing if you had "preemptively" gone through the portal and could see the other side. There is some image cropping, texture mapping, and rendering stuff related to this we have to talk about later, but ultimately that's the main idea. <br /><br />
+
+        The videos below are ordered in chronological development order so you can see some progress. (Generall through... Video One = Debugging one camera attached to the right portal | Video Two = Cameras attached to both portals | Video Three = Rotational perspective after finishing positional )
+    </p>
+
+    <div align="middle">
+        <table style="width=100%">
+            <tr>
+                <td>
+                    <video width="640" height="480" controls=controls>
+                        <source src="images/cameravidone.mp4" type="video/mp4" />
+                    </video>
+                </td>
+            </tr>
+            <br />
+
+        </table>
+    </div>
+
+
+    <div align="middle">
+        <table style="width=100%">
+            <tr>
+                <td>
+                    <video width="640" height="480" controls=controls>
+                        <source src="images/cameravidtwo.mp4" type="video/mp4" />
+                    </video>
+                </td>
+            </tr>
+            <br />
+
+        </table>
+    </div>
+
+
+    <div align="middle">
+        <table style="width=100%">
+            <tr>
+                <td>
+                    <video width="640" height="480" controls=controls>
+                        <source src="images/cameravidthree.mp4" type="video/mp4" />
+                    </video>
+                </td>
+            </tr>
+            <br />
+
+        </table>
+    </div>
+    <br /><br />
+
+    <p style="font-size:13px">
+
+        INSERT RENDERING STUFF HERE. JUST TYPE OUT WHAT PICTURES ARE WHAT IN THIS PARAGRAPH.
+    </p>
+
+
+
+    <div align="middle">
+        <table style="width=100%">
+            <tr>
+                <td>
+                    <img src="images/renderone.png" align="middle" width="640px" />
+                </td>
+                <td>
+                    <video width="640" height="480" controls=controls>
+                        <source src="images/rendervidone.mp4" type="video/mp4" />
+                    </video>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <video width="640" height="480" controls=controls>
+                        <source src="images/rendervidthree.mp4" type="video/mp4" />
+                    </video>
+                </td>
+                <td>
+                    <video width="640" height="480" controls=controls>
+                        <source src="images/rendervidfour.mp4" type="video/mp4" />
+                    </video>
+                </td>
+            </tr>
+            <br />
+
+        </table>
+    </div>
+
+    <h2 align="left"> 5. Modeling </h2>
+    <p style="font-size:13px">
+
+        There's a likely chance that the player is going to create portals in which they can view theirself, so we decided to add a character model. Unity-Chan is an asset imported from the Unity Asset Store.
+        The asset came with its own player controls script, but because it did not have the functionality that we wanted (move the camera alongside the mouse, use A/D to turn left and right), we imported another
+        Unity asset that had player controls and, with Unity's animator controller, set animations that would go along fluidly with the locomotion.
+
+        Her name is Unity-Chan!
 
         <div align="middle">
-  <table style="width=100%">
-    <tr>
-      <td>
-        <video width="640" height="480" controls>
-            <source src="images/cameravidtwo.mp4" type="video/mp4">
-          </video>
-      </td>
-    </tr>
-    <br>
-    
-  </table>
-</div>
+            <table style="width=100%">
+                <tr>
+                    <td>
+                        <video width="640" height="480" controls=controls>
+                            <source src="images/model-walking.mp4" type="video/mp4" />
+                        </video>
+                    </td>
+                </tr>
+                <br />
 
-    
-    <div align="middle">
-  <table style="width=100%">
-    <tr>
-      <td>
-        <video width="640" height="480" controls>
-            <source src="images/cameravidthree.mp4" type="video/mp4">
-          </video>
-      </td>
-    </tr>
-    <br>
-    
-  </table>
-</div>
-<br><br>
-
- <p style="font-size:13px">
-
-INSERT RENDERING STUFF HERE. JUST TYPE OUT WHAT PICTURES ARE WHAT IN THIS PARAGRAPH.
-    </p>
-    
-
-    
-<div align="middle">
-  <table style="width=100%">
-    <tr>
-      <td>
-         <img src="images/renderone.png" align="middle" width="640px"/>
-      </td>
-        <td>
-        <video width="640" height="480" controls>
-            <source src="images/rendervidone.mp4" type="video/mp4">
-          </video>
-      </td>
-    </tr>
-      <tr>
-      <td>
-        <video width="640" height="480" controls>
-            <source src="images/rendervidthree.mp4" type="video/mp4">
-          </video>
-      </td>
-        <td>
-        <video width="640" height="480" controls>
-            <source src="images/rendervidfour.mp4" type="video/mp4">
-          </video>
-      </td>
-    </tr>
-    <br>
-    
-  </table>
-</div>
-
-<h2 align="left"> 5. Miscellaneous Touch-ups (Portal Creation / Modeling / Etc) </h2>   
-    <p style="font-size:13px">
-
-INSERT EMILY STUFF HERE. I DIDNT HAVE ANY PICS SO I COULDNT SET IT UP FOR YOU. COPY AND PASTE FROM OTHER SECTIONS.
+            </table>
+        </div>
     </p>
 
-<h2 align="left"> Conclusions </h2>   
+    <h2 align="left"> 6. Portal Creation: Placement and Sizing </h2>
+    <p style="font-size:13px">
+        Our big goal for this project was to be able to create custom-sized portals and place portals on any surface. 
+        We used raycasting to be able to select the position that the portal would be; we overlayed a line renderer on that spot as a visual
+        for the player to see the placement of the portal. The player can also adjust the position by holding the correct button. Once they've selected a size and a position,
+        the player can place a portal and its matching pair elsewhere!
+
+        Controls: Right click to select a surface. Hold right click to adjust size. "B" to instantiate a portal at that position.
+
+        <div align="middle">
+            <table style="width=100%">
+                <tr>
+                    <td>
+                        <video width="640" height="480" controls=controls>
+                            <source src="images/portalcreation.mp4" type="video/mp4" />
+                        </video>
+                    </td>
+                </tr>
+                <br />
+
+            </table>
+        </div>
+    </p>
+
+    <h2 align="left"> Conclusions </h2>
     <p style="font-size:13px">
 
-We pretty much met all of our goals! There are a couple small things we wish we could've done better / cleaner, but that's how midway checkpoints go. We have a good amount of functionality down and we are looking forward to getting into the actual teleportation stuff down. We also have a couple of bugs to fix in the basic rendering (the clipping plane rectangular issues) by modifying the custom shader.
+        We pretty much met all of our goals! There are a couple small things we wish we could've done better / cleaner, but that's how midway checkpoints go. We have a good amount of functionality down and we are looking forward to getting into the actual teleportation stuff down. We also have a couple of bugs to fix in the basic rendering (the clipping plane rectangular issues) by modifying the custom shader.
     </p>
 
 </body>
