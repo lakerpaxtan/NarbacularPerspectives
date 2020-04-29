@@ -487,7 +487,12 @@
 
     <p style="font-size:13px">
 
-        INSERT RENDERING STUFF HERE. JUST TYPE OUT WHAT PICTURES ARE WHAT IN THIS PARAGRAPH.
+        The next step of the of the project involved actually getting the view of each of the cameras onto each of the portals. This was done by setting the output of each of the cameras to a RenderTexture. We then applied these textures to the material on the quad for each respective portal. This effect is demonstrated in the first video below. <br><br>
+
+You will notice that they still do not look quite right. The first thing we did to improve the portals was to account for the possibility that there might be objects in between the camera and the back of the portal. We did this by setting the near clip plane of each of the cameras to be the distance from that camera to the portal. This is demonstrated in the second video below where there are gameobjects behind each of the portals, but they are not rendered on the portals themselves. <br><br>
+
+With the clipping problem out of the way, it was time to fix the FOV problem. With the original implementation, the ENTIRE view of each camera is represented on the portals. To fix this, we created a custom shader for the portals that would take the texture generated from the camera view, but instead of using the entire thing, it only used the part that corresponding to the UV coordinates of each position in screen space for the player. This gave us the cropping effect that can be seen in the third video below. With this custom shader, we were then also able to make the surface of the portals unlit so that they do not reflect light as if they were a flat wall. There is still a problem with viewing a portal through a portal, but we will address that later. <br><br>
+    
     </p>
 
 
@@ -572,8 +577,11 @@
     <h2 align="left"> Conclusions </h2>
     <p style="font-size:13px">
 
-        We pretty much met all of our goals! There are a couple small things we wish we could've done better / cleaner, but that's how midway checkpoints go. We have a good amount of functionality down and we are looking forward to getting into the actual teleportation stuff down. We also have a couple of bugs to fix in the basic rendering (the clipping plane rectangular issues) by modifying the custom shader.
+        We pretty much met all of our goals! There are a couple small things we wish we could've done better / cleaner, but that's how midway checkpoints go. We have a good amount of functionality down and we are looking forward to getting into the actual teleportation stuff down. We also have a couple of bugs to fix in the basic rendering (the clipping plane rectangular issues) by modifying the custom shader. <br><br>
+				Check out our milestone video below:
     </p>
+
+		<iframe width="560" height="315" src="https://www.youtube.com/embed/jaLltHpv0bE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 </body>
 </html>
