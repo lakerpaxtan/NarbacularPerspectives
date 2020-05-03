@@ -14,6 +14,7 @@ public class Portal
     private GameObject portalCam;
 
     private GameObject actualPlane;
+    private GameObject borderPlane;
 
     private GameObject playerObject; 
 
@@ -52,6 +53,12 @@ public class Portal
         actualPlane.transform.localScale = new Vector3(scaleLengths[0], scaleLengths[1], 1);
 
         actualPlane.transform.rotation = Quaternion.FromToRotation(Vector3.forward, -normalVec);
+
+        borderPlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        borderPlane.transform.position = gameObjectPos - 0.01f * normalVec;
+        borderPlane.name = name + "border";
+        borderPlane.transform.localScale = actualPlane.transform.localScale + new Vector3(0.1f, 0.1f, 0f);
+        borderPlane.transform.rotation = actualPlane.transform.rotation;
 
     }
 
