@@ -76,15 +76,13 @@ public class Portal
             this.portalCam.transform.position = this.otherPortal.actualPlane.transform.TransformPoint(relativePos);
             this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.right, 180);
 
+            Quaternion relativeRot = Quaternion.FromToRotation(-normalVec, this.otherPortal.normalVec);
+            this.portalCam.transform.rotation = relativeRot * this.playerObject.transform.rotation;
+
             if (normalVec == this.otherPortal.normalVec) {
                 this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.forward, 180);
-                this.portalCam.transform.eulerAngles = new Vector3(playerObject.transform.eulerAngles[0], 180 + playerObject.transform.eulerAngles[1], playerObject.transform.eulerAngles[2]);
-            } else {
-                Quaternion relativeRot = Quaternion.FromToRotation(-normalVec, this.otherPortal.normalVec);
-                this.portalCam.transform.rotation = relativeRot * this.playerObject.transform.rotation;
-            }  
+            } 
         }
-        
     }
 
     public static void pairPortals(Portal portal1, Portal portal2){
