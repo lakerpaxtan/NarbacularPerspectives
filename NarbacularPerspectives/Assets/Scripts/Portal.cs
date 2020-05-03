@@ -14,6 +14,7 @@ public class Portal
     private GameObject portalCam;
 
     private GameObject actualPlane;
+    private GameObject reversePlane;
     private GameObject borderPlane;
 
     private GameObject playerObject; 
@@ -54,12 +55,22 @@ public class Portal
         actualPlane.transform.localScale = new Vector3(scaleLengths[0], scaleLengths[1], 1);
 
         actualPlane.transform.rotation = Quaternion.FromToRotation(Vector3.forward, -normalVec);
+        //actualPlane.transform.rotation = Quaternion.LookRotation(-normalVec, Vector3.up);
 
         borderPlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
         borderPlane.transform.position = gameObjectPos - 0.01f * normalVec;
         borderPlane.name = name + "border";
         borderPlane.transform.localScale = actualPlane.transform.localScale + new Vector3(0.1f, 0.1f, 0f);
         borderPlane.transform.rotation = actualPlane.transform.rotation;
+
+        reversePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        reversePlane.transform.position = gameObjectPos;
+        reversePlane.name = name + "reversePlane";
+        reversePlane.transform.localScale = new Vector3(scaleLengths[0], scaleLengths[1], 1);
+        reversePlane.transform.rotation = Quaternion.FromToRotation(Vector3.forward, normalVec);
+        //reversePlane.transform.rotation = Quaternion.LookRotation(normalVec, Vector3.up);
+        //reversePlane.transform.Rotate(reversePlane.transform.forward, 180);
+        reversePlane.SetActive(false);
 
     }
 
@@ -72,12 +83,20 @@ public class Portal
 
     public void updateCameraRelativeToPlayer(){
         if (isPaired){
-            Vector3 relativePos = actualPlane.transform.InverseTransformPoint(playerObject.transform.position);
-            this.portalCam.transform.position = this.otherPortal.actualPlane.transform.TransformPoint(relativePos);
-            this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.right, 180);
 
+            //Debug.Log(this.playerObject.transform.eulerAngles);
+           
+
+            Vector3 relativePos = actualPlane.transform.InverseTransformPoint(playerObject.transform.position);
+            this.portalCam.transform.position = this.otherPortal.reversePlane.transform.TransformPoint(relativePos);
+            //this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.right, 180);
+            
+           
+            //this.portalCam.transform.up = this.otherPortal.reversePlane.transform.up;
+            //this.portalCam.transform.Rotate(this.portalCam.transform.up, 180);
             Quaternion relativeRot = Quaternion.FromToRotation(-normalVec, this.otherPortal.normalVec);
             this.portalCam.transform.rotation = relativeRot * this.playerObject.transform.rotation;
+          
 
             if (normalVec == this.otherPortal.normalVec) {
                 this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.forward, 180);
