@@ -9,8 +9,9 @@ public class GameManager : MonoBehaviour
     public GameObject flareGun;
     public GameObject playerObject;
     
-    Portal testPortal;
-    Portal testPortal2;
+    
+
+    List<Portal> portalList;
 
     
 
@@ -18,24 +19,32 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        portalList = new List<Portal>();
         flareGun.SetActive(true);
-        testPortal = new Portal(new Vector2(4,4), new Vector2(0,0), new Vector3(-8f,2, 14), new Vector3(0,0,-1), playerObject, "testOne");
-        testPortal2 = new Portal(new Vector2(4,4), new Vector2(0,0), new Vector3(8f,2,-16), new Vector3(0,0,1), playerObject, "testTwo");
+        Portal testPortal = new Portal(4,4, new Vector3(8f,2, 10), new Vector3(0,0,-1), playerObject, "testOne");
+        Portal testPortal2 = new Portal(4,4, new Vector3(8f,2,-14), new Vector3(0,0,1), playerObject, "testTwo");
+        Portal.pairPortals(testPortal, testPortal2);
+        portalList.Add(testPortal);
+        
+        Portal testPortal3 = new Portal(4,4, new Vector3(-8f,2, 10), new Vector3(0,0,1), playerObject, "testThree");
+        Portal testPortal4 = new Portal(4,4, new Vector3(-8f,2,-10), new Vector3(0,0,1), playerObject, "testFour");
+        Portal.pairPortals(testPortal3, testPortal4);
+        portalList.Add(testPortal3);
        
     }
 
     // Update is called once per frame
     void Update()
     {
-        Portal.pairPortals(testPortal, testPortal2);
-        //testPortal.updateCameraRelativeToPlayer();
-        //testPortal2.updateCameraRelativeToPlayer();
+        foreach(Portal tempPort in portalList){
+            tempPort.update();
+        }
 
-        testPortal.update();
-        testPortal2.update();
+        
 
-        //testPortal.setTexture();
-        //testPortal2.setTexture();
+
+       
+       
     }
 
     

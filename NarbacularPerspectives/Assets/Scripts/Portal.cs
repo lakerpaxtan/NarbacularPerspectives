@@ -16,7 +16,9 @@ public class Portal
     private GameObject actualPlane;
     private GameObject reversePlane;
     private GameObject borderPlane;
-
+    private Vector3 upDir;
+    float width;
+    float height;
     private GameObject playerObject; 
 
     private string name;
@@ -25,10 +27,10 @@ public class Portal
     
 
 
-    public Portal(Vector2 first, Vector2 second, Vector3 middlePos, Vector3 normal, GameObject player, string str)
+    public Portal(float width, float height, Vector3 middlePos, Vector3 normal, GameObject player, string str)
     {
-        topLeftCoord = first;
-        bottomRightCoord = second;
+        this.width = width;
+        this.height = height;
         gameObjectPos = middlePos;
         normalVec = normal;
         normalVec.Normalize();
@@ -50,9 +52,8 @@ public class Portal
         actualPlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
         actualPlane.transform.position = gameObjectPos;
         actualPlane.name = name;
-
-        Vector3 scaleLengths = topLeftCoord - bottomRightCoord;
-        actualPlane.transform.localScale = new Vector3(scaleLengths[0], scaleLengths[1], 1);
+        //upDir = new Vector3(topLeftCoord[0] - top)
+        actualPlane.transform.localScale = new Vector3(width, height, 1);
 
         actualPlane.transform.rotation = Quaternion.FromToRotation(Vector3.forward, -normalVec);
         //actualPlane.transform.rotation = Quaternion.LookRotation(-normalVec, Vector3.up);
@@ -66,11 +67,12 @@ public class Portal
         reversePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
         reversePlane.transform.position = gameObjectPos;
         reversePlane.name = name + "reversePlane";
-        reversePlane.transform.localScale = new Vector3(scaleLengths[0], scaleLengths[1], 1);
+        reversePlane.transform.localScale = new Vector3(width, height, 1);
         reversePlane.transform.rotation = Quaternion.FromToRotation(Vector3.forward, normalVec);
         //reversePlane.transform.rotation = Quaternion.LookRotation(normalVec, Vector3.up);
         //reversePlane.transform.Rotate(reversePlane.transform.forward, 180);
         reversePlane.SetActive(false);
+        upDir = this.actualPlane.transform.up;
 
     }
 
@@ -86,7 +88,7 @@ public class Portal
 
             //Debug.Log(this.playerObject.transform.eulerAngles);
            
-
+         
             Vector3 relativePos = actualPlane.transform.InverseTransformPoint(playerObject.transform.position);
             this.portalCam.transform.position = this.otherPortal.reversePlane.transform.TransformPoint(relativePos);
             //this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.right, 180);
@@ -98,9 +100,15 @@ public class Portal
             this.portalCam.transform.rotation = relativeRot * this.playerObject.transform.rotation;
           
 
-            if (normalVec == this.otherPortal.normalVec) {
+            // if (normalVec == otherPortal.normalVec) {
+            //     this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.forward, 180);
+            // } 
+
+            if (portalCam.transform.eulerAngles[2] == 180 || portalCam.transform.eulerAngles[2] == -180 || normalVec == otherPortal.normalVec){
                 this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.forward, 180);
-            } 
+            }
+
+
         }
     }
 
@@ -111,22 +119,23 @@ public class Portal
         portal1.otherPortal = portal2;
         portal2.otherPortal = portal1;
 
-        setTargetTexture(portal1, portal2);
     }
 
-    private static void setTargetTexture(Portal portal1, Portal portal2) {
-        portal1.actualPlane.GetComponent<Renderer>().material.shader = portalShader;
-        portal2.actualPlane.GetComponent<Renderer>().material.shader = portalShader;
+    public void texturePortal(){
+        actualPlane.GetComponent<Renderer>().material.shader = portalShader;
+        otherPortal.actualPlane.GetComponent<Renderer>().material.shader = portalShader;
 
-        portal1.portalCam.GetComponent<Camera>().targetTexture = portal1.cameraTexture;
-        portal2.portalCam.GetComponent<Camera>().targetTexture = portal2.cameraTexture;
+        portalCam.GetComponent<Camera>().targetTexture = cameraTexture;
+        otherPortal.portalCam.GetComponent<Camera>().targetTexture = otherPortal.cameraTexture;
 
-        portal1.portalCam.GetComponent<Camera>().Render();
-        portal2.portalCam.GetComponent<Camera>().Render();
+        portalCam.GetComponent<Camera>().Render();
+        otherPortal.portalCam.GetComponent<Camera>().Render();
 
-        portal1.actualPlane.GetComponent<Renderer>().material.SetTexture("_MainTex", portal1.cameraTexture);
-        portal2.actualPlane.GetComponent<Renderer>().material.SetTexture("_MainTex", portal2.cameraTexture);
+        actualPlane.GetComponent<Renderer>().material.SetTexture("_MainTex", cameraTexture);
+        otherPortal.actualPlane.GetComponent<Renderer>().material.SetTexture("_MainTex", otherPortal.cameraTexture);
     }
+
+   
 
     public void updateNearClipPlane() {
         Camera cam = otherPortal.portalCam.GetComponent<Camera>();
@@ -143,6 +152,9 @@ public class Portal
     public void update() {
         updateCameraRelativeToPlayer();
         updateNearClipPlane();
+        otherPortal.updateCameraRelativeToPlayer();
+        otherPortal.updateNearClipPlane();
+        texturePortal();
     }
 
 }
