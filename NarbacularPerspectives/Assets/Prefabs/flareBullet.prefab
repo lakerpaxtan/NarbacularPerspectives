@@ -13,9 +13,10 @@ GameObject:
   - component: {fileID: 1478609731454257113}
   - component: {fileID: 8865938395120124020}
   - component: {fileID: 54725074013548274}
+  - component: {fileID: 114746899310384018}
   m_Layer: 0
   m_Name: flareBullet
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -109,3 +110,15 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2
+--- !u!114 &114746899310384018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6753973996053316427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b93f6d7d98ebd4eb47328aa9690e0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

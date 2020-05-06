@@ -23,16 +23,16 @@ public class Teleportable : MonoBehaviour
     {   
         //Debug.Log("update");  
         if(insidePortal){
-            if(this.gameObject.tag == "MainCamera"){
+            //if(this.gameObject.tag == "MainCamera"){
                 Vector3 relativePos = telePortal.actualPlane.transform.InverseTransformPoint(this.gameObject.transform.position);
                 lastKnownSwapPos = this.telePortal.otherPortal.reversePlane.transform.TransformPoint(relativePos);
                 this.copiedObject.transform.position = lastKnownSwapPos;
-            }
+            //}
         }
     }
 
     private void OnTriggerEnter(Collider other){
-        //Debug.Log("ON TRIGGER ENTER START");
+        Debug.Log("ON TRIGGER ENTER START");
         ignoreUpdate = false;
         if (Portal.portalTable.ContainsKey(other.gameObject)) {
             telePortal = Portal.portalTable[other.gameObject];
@@ -49,25 +49,24 @@ public class Teleportable : MonoBehaviour
                 Destroy(copiedObject.GetComponentInChildren<AudioListener>());
 
                 Destroy(copiedObject.GetComponent<Teleportable>());
-            }    
+            } 
+            else if (copiedObject.tag == "Bullet") {
+                Destroy(copiedObject.GetComponent<CapsuleCollider>());
+                Destroy(copiedObject.GetComponent<Teleportable>());
+            }   
         }
-        //Debug.Log("ON TRIGGER ENTER STOP");
+        Debug.Log("ON TRIGGER ENTER STOP");
     }
 
     private void OnTriggerExit(Collider other){
-        //Debug.Log("ON TRIGGER EXIT START");
-        // if (Portal.portalTable.ContainsKey(other.gameObject) && other.gameObject == telePortal.actualPlane) {
-        //     telePortal = null;
-        //     insidePortal = false;
-        //     Destroy(copiedObject);
-        //     copiedObject = null;
-        // }
-        pastHalfway = Vector3.Dot(telePortal.normalVec, this.gameObject.transform.GetChild(0).transform.position - telePortal.actualPlane.transform.position) > 0 ? false: true;
+        Debug.Log("ON TRIGGER EXIT START");
+        pastHalfway = Vector3.Dot(telePortal.normalVec, this.gameObject.transform.position - telePortal.actualPlane.transform.position) > 0 ? false: true;
         if (pastHalfway) {
             teleportObject(copiedObject.transform.position);
         }
+        insidePortal = false;
         Destroy(copiedObject);
-        //Debug.Log("ON TRIGGER EXIT STOP");
+        Debug.Log("ON TRIGGER EXIT STOP");
     }
 
     void enableFPC() {
@@ -77,9 +76,13 @@ public class Teleportable : MonoBehaviour
 
     void teleportObject(Vector3 pos){
         Debug.Log("TELEPORTING");
-        this.gameObject.GetComponent<FirstPersonController>().enabled = false; 
-        this.gameObject.transform.position = pos;
-        //this.gameObject.GetComponent<FirstPersonController>().enabled = true;
-        Invoke("enableFPC", 0.05f);
+        if(this.tag == "MainCamera"){
+            this.gameObject.GetComponent<FirstPersonController>().enabled = false; 
+            this.gameObject.transform.position = pos;
+            //this.gameObject.GetComponent<FirstPersonController>().enabled = true;
+            Invoke("enableFPC", 0.05f);
+        }else{
+            this.gameObject.transform.position = pos;
+        }
     }
 }
