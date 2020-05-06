@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
         
         portalList = new List<Portal>();
         flareGun.SetActive(true);
-        Portal testPortal = new Portal(4,4, new Vector3(8f,2, 10), new Vector3(0,0,-1), playerObject, "testOne");
+        Portal testPortal = new Portal(4,4, new Vector3(8f,2, 10), new Vector3(1,0,-1), playerObject, "testOne");
         Portal testPortal2 = new Portal(4,4, new Vector3(8f,2,-14), new Vector3(0,0,1), playerObject, "testTwo");
         Portal.pairPortals(testPortal, testPortal2);
         portalList.Add(testPortal);

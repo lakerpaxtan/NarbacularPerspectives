@@ -58,6 +58,10 @@ public class Portal
         actualPlane.transform.localScale = new Vector3(width, height, 1);
 
         actualPlane.transform.rotation = Quaternion.FromToRotation(Vector3.forward, -normalVec);
+
+        // if (portalCam.transform.eulerAngles[2] == 180 || portalCam.transform.eulerAngles[2] == -180 || normalVec == otherPortal.normalVec){
+        //     this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.forward, 180);
+        // }
         //actualPlane.transform.rotation = Quaternion.LookRotation(-normalVec, Vector3.up);
 
         borderPlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
@@ -72,11 +76,14 @@ public class Portal
         reversePlane.transform.position = gameObjectPos + 0.25f *(-normalVec);
         reversePlane.name = name + "reversePlane";
         reversePlane.transform.localScale = new Vector3(width, height, 1);
-        reversePlane.transform.rotation = Quaternion.FromToRotation(Vector3.forward, normalVec);
+        //reversePlane.transform.rotation = Quaternion.FromToRotation(Vector3.forward, normalVec);
         reversePlane.AddComponent<MeshCollider>();
-        //reversePlane.transform.rotation = Quaternion.LookRotation(normalVec, Vector3.up);
+        reversePlane.transform.rotation = Quaternion.LookRotation(normalVec, -actualPlane.transform.up);
         //reversePlane.transform.Rotate(reversePlane.transform.forward, 180);
         //reversePlane.SetActive(false);
+        //reversePlane.transform.RotateAround(reversePlane.transform.position, reversePlane.transform.right, 180);
+        
+        
         upDir = this.actualPlane.transform.up;
 
         this.setupTrigger();

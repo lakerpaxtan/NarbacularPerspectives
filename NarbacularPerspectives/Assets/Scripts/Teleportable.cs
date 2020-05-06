@@ -13,7 +13,7 @@ public class Teleportable : MonoBehaviour
 
     Vector3 lastKnownSwapPos;
 
-    float deadzone = 0.4f;
+    float deadzone = 0.6f;
 
     public bool teleported = false;
     // Start is called before the first frame update
@@ -41,14 +41,10 @@ public class Teleportable : MonoBehaviour
                 //Vector3 relativePos = actualPlane.transform.InverseTransformPoint(playerObject.transform.position);
                 //this.portalCam.transform.position = this.otherPortal.reversePlane.transform.TransformPoint(relativePos);
 
-             
-
-            }
-            
-
-
-
-            
+                if (this.copiedObject.transform.eulerAngles[2] == 180 || this.copiedObject.transform.eulerAngles[2] == -180 || telePortal.normalVec == telePortal.otherPortal.normalVec){
+                    this.copiedObject.transform.RotateAround(this.telePortal.otherPortal.actualPlane.transform.position, this.telePortal.otherPortal.actualPlane.transform.forward, 180);
+                }
+            }    
         }
     }
 
