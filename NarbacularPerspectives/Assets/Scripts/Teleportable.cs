@@ -25,7 +25,6 @@ public class Teleportable : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
-        //Debug.Log("update");  -  deadzone *(telePortal.normalVec)
         if(insidePortal){
             
             pastHalfway = Vector3.Dot(telePortal.normalVec, this.gameObject.transform.position - telePortal.actualPlane.transform.position ) > 0 ? false: true;
@@ -34,21 +33,24 @@ public class Teleportable : MonoBehaviour
                 teleportObject(copiedObject.transform.position +  deadzone *(telePortal.otherPortal.normalVec));
                 insidePortal = false;
                 Destroy(copiedObject);
-            } else{
+            } else {
                 Vector3 relativePos = telePortal.actualPlane.transform.InverseTransformPoint(this.gameObject.transform.position);
                 this.copiedObject.transform.position  = this.telePortal.otherPortal.reversePlane.transform.TransformPoint(relativePos);
 
-                //Vector3 relativePos = actualPlane.transform.InverseTransformPoint(playerObject.transform.position);
-                //this.portalCam.transform.position = this.otherPortal.reversePlane.transform.TransformPoint(relativePos);
+                // Rotate Clone
+                Vector3 relativeRot = telePortal.actualPlane.transform.InverseTransformDirection(this.gameObject.transform.rotation * Vector3.right);
+                this.copiedObject.transform.rotation = Quaternion.LookRotation(this.telePortal.otherPortal.reversePlane.transform.TransformDirection(relativeRot), Vector3.up);
+                this.copiedObject.transform.RotateAround(this.copiedObject.transform.position, this.copiedObject.transform.up, -90);
 
-                if (this.copiedObject.transform.eulerAngles[2] == 180 || this.copiedObject.transform.eulerAngles[2] == -180 || telePortal.normalVec == telePortal.otherPortal.normalVec){
+                if (this.copiedObject.transform.eulerAngles[2] == 180 || this.copiedObject.transform.eulerAngles[2] == -180 || telePortal.normalVec == telePortal.otherPortal.normalVec) {
                     this.copiedObject.transform.RotateAround(this.telePortal.otherPortal.actualPlane.transform.position, this.telePortal.otherPortal.actualPlane.transform.forward, 180);
                 }
+
             }    
         }
     }
 
-    private void OnTriggerEnter(Collider other){
+    private void OnTriggerEnter(Collider other) {
         
         Debug.Log("ON TRIGGER ENTER START");
         ignoreUpdate = false;
@@ -100,12 +102,16 @@ public class Teleportable : MonoBehaviour
 
     void teleportObject(Vector3 pos){
         Debug.Log("TELEPORTING");
+
         if(this.tag == "MainCamera"){
             this.gameObject.GetComponent<FirstPersonController>().enabled = false; 
             this.gameObject.transform.position = pos;
-            Invoke("enableFPC", 0.02f);
+            this.gameObject.transform.rotation = this.copiedObject.transform.rotation;
+            Invoke("enableFPC", 1f);
         }else{
+            this.gameObject.transform.rotation = this.copiedObject.transform.rotation;
             this.gameObject.transform.position = pos;
         }
+        
     }
 }
