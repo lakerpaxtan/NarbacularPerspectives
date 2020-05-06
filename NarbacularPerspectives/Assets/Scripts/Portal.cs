@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Portal 
+public class Portal
 {
     private bool isPaired = false; 
     private Vector2 topLeftCoord;
     private Vector2 bottomRightCoord;
     private Vector3 gameObjectPos;
-    private Vector3 normalVec;
-    private Portal otherPortal;
+    public Vector3 normalVec;
+    public Portal otherPortal;
 
     private GameObject portalCam;
 
-    private GameObject actualPlane;
-    private GameObject reversePlane;
+    public GameObject actualPlane;
+    public GameObject reversePlane;
     private GameObject borderPlane;
     private Vector3 upDir;
     float width;
@@ -24,6 +24,8 @@ public class Portal
     private string name;
     private RenderTexture cameraTexture;
     public static Shader portalShader;
+
+    public static Dictionary<GameObject, Portal> portalTable = new Dictionary<GameObject, Portal>();
     
 
 
@@ -59,12 +61,14 @@ public class Portal
         //actualPlane.transform.rotation = Quaternion.LookRotation(-normalVec, Vector3.up);
 
         borderPlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        UnityEngine.Object.Destroy(borderPlane.GetComponent<MeshCollider>());
         borderPlane.transform.position = gameObjectPos - 0.01f * normalVec;
         borderPlane.name = name + "border";
         borderPlane.transform.localScale = actualPlane.transform.localScale + new Vector3(0.1f, 0.1f, 0f);
         borderPlane.transform.rotation = actualPlane.transform.rotation;
 
         reversePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        UnityEngine.Object.Destroy(reversePlane.GetComponent<MeshCollider>());
         reversePlane.transform.position = gameObjectPos;
         reversePlane.name = name + "reversePlane";
         reversePlane.transform.localScale = new Vector3(width, height, 1);
@@ -74,7 +78,23 @@ public class Portal
         reversePlane.SetActive(false);
         upDir = this.actualPlane.transform.up;
 
+        this.setupTrigger();
+
+
+
+
+        portalTable.Add(actualPlane, this);
+
     }
+
+    private void setupTrigger(){
+        UnityEngine.Object.Destroy(this.actualPlane.gameObject.GetComponent<MeshCollider>()); 
+       
+        BoxCollider tempColl = actualPlane.gameObject.AddComponent<BoxCollider>();
+        tempColl.isTrigger = true;
+        tempColl.size = new Vector3(1,1,0.50f);
+    }
+
 
     private void createPortalCamera(){
         this.portalCam = new GameObject();
