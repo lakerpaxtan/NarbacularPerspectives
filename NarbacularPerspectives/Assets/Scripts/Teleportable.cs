@@ -10,6 +10,8 @@ public class Teleportable : MonoBehaviour
     Portal telePortal;
     bool ignoreUpdate = false;
     GameObject copiedObject; 
+
+    Vector3 lastKnownSwapPos;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,41 +20,21 @@ public class Teleportable : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {     
-    
+    {   
+        //Debug.Log("update");  
         if(insidePortal){
             if(this.gameObject.tag == "MainCamera"){
-                pastHalfway = Vector3.Dot(telePortal.normalVec, this.gameObject.transform.GetChild(0).transform.position - telePortal.actualPlane.transform.position) > 0 ? false: true;
-                Debug.Log(pastHalfway + " " + telePortal.actualPlane.gameObject.name);
-                
-                if(pastHalfway){
-                    
-                    ignoreUpdate = true;
-                    teleportObject(copiedObject.transform.position);
-
-                    //copiedObject = null;
-                    //telePortal = null; 
-                    //telePortal = telePortal.otherPortal;
-                }else{
-                    Vector3 relativePos = telePortal.actualPlane.transform.InverseTransformPoint(this.gameObject.transform.position);
-                    this.copiedObject.transform.position = this.telePortal.otherPortal.reversePlane.transform.TransformPoint(relativePos);
-                }
-                
-                
-
-
-
-
+                Vector3 relativePos = telePortal.actualPlane.transform.InverseTransformPoint(this.gameObject.transform.position);
+                lastKnownSwapPos = this.telePortal.otherPortal.reversePlane.transform.TransformPoint(relativePos);
+                this.copiedObject.transform.position = lastKnownSwapPos;
             }
-
-
         }
     }
 
     private void OnTriggerEnter(Collider other){
-        Debug.Log("ON TRIGGER ENTER");
+        //Debug.Log("ON TRIGGER ENTER START");
         ignoreUpdate = false;
-        if (Portal.portalTable.ContainsKey(other.gameObject)){
+        if (Portal.portalTable.ContainsKey(other.gameObject)) {
             telePortal = Portal.portalTable[other.gameObject];
             insidePortal = true;
             copiedObject = Instantiate(this.gameObject);
@@ -65,19 +47,27 @@ public class Teleportable : MonoBehaviour
                 Destroy(copiedObject.GetComponentInChildren<Camera>());
                 Destroy(copiedObject.GetComponentInChildren<FlareGunFiring>());
                 Destroy(copiedObject.GetComponentInChildren<AudioListener>());
-            }
-            
+
+                Destroy(copiedObject.GetComponent<Teleportable>());
+            }    
         }
+        //Debug.Log("ON TRIGGER ENTER STOP");
     }
 
     private void OnTriggerExit(Collider other){
-        Debug.Log("ON TRIGGER EXIT");
-        if (Portal.portalTable.ContainsKey(other.gameObject) && other.gameObject == telePortal.actualPlane){
-            telePortal = null;
-            insidePortal = false;
-            Destroy(copiedObject);
-            copiedObject = null;
+        //Debug.Log("ON TRIGGER EXIT START");
+        // if (Portal.portalTable.ContainsKey(other.gameObject) && other.gameObject == telePortal.actualPlane) {
+        //     telePortal = null;
+        //     insidePortal = false;
+        //     Destroy(copiedObject);
+        //     copiedObject = null;
+        // }
+        pastHalfway = Vector3.Dot(telePortal.normalVec, this.gameObject.transform.GetChild(0).transform.position - telePortal.actualPlane.transform.position) > 0 ? false: true;
+        if (pastHalfway) {
+            teleportObject(copiedObject.transform.position);
         }
+        Destroy(copiedObject);
+        //Debug.Log("ON TRIGGER EXIT STOP");
     }
 
     void enableFPC() {
@@ -86,13 +76,10 @@ public class Teleportable : MonoBehaviour
 
 
     void teleportObject(Vector3 pos){
+        Debug.Log("TELEPORTING");
         this.gameObject.GetComponent<FirstPersonController>().enabled = false; 
         this.gameObject.transform.position = pos;
-        Invoke("enableFPC", 0.017f);
+        //this.gameObject.GetComponent<FirstPersonController>().enabled = true;
+        Invoke("enableFPC", 0.05f);
     }
-
-
-
-
-
 }
