@@ -13,7 +13,7 @@ public class Teleportable : MonoBehaviour
 
     Vector3 lastKnownSwapPos;
 
-    float deadzone = 0.6f;
+    float deadzone = 0.5f;
 
     public bool teleported = false;
     // Start is called before the first frame update
@@ -28,7 +28,7 @@ public class Teleportable : MonoBehaviour
         if(insidePortal){
             
             pastHalfway = Vector3.Dot(telePortal.normalVec, this.gameObject.transform.position - telePortal.actualPlane.transform.position ) > 0 ? false: true;
-            if (pastHalfway && gameObject.tag == "MainCamera") {
+            if (pastHalfway && gameObject.tag == "Player") {
                 teleported = true;
                 teleportObject(copiedObject.transform.position +  deadzone *(telePortal.otherPortal.normalVec));
                 insidePortal = false;
@@ -59,7 +59,7 @@ public class Teleportable : MonoBehaviour
             telePortal.reversePlane.GetComponent<MeshCollider>().enabled = false;
             insidePortal = true;
             copiedObject = Instantiate(this.gameObject);
-            if(copiedObject.tag == "MainCamera"){
+            if(copiedObject.tag == "Player"){
                 Destroy(copiedObject.GetComponent<FirstPersonController>());
                 Destroy(copiedObject.GetComponent<AudioSource>());
                 copiedObject.GetComponent<Rigidbody>().isKinematic = true;
@@ -67,9 +67,10 @@ public class Teleportable : MonoBehaviour
                 Destroy(copiedObject.GetComponentInChildren<FlareLayer>());
                 Destroy(copiedObject.GetComponentInChildren<Camera>());
                 Destroy(copiedObject.GetComponentInChildren<FlareGunFiring>());
-                Destroy(copiedObject.GetComponentInChildren<AudioListener>());
-
+                Destroy(copiedObject.transform.GetChild(0).GetComponentInChildren<AudioListener>());
+                Destroy(copiedObject.GetComponent<FirstPersonAIO>());
                 Destroy(copiedObject.GetComponent<Teleportable>());
+                Destroy(copiedObject.GetComponent<CapsuleCollider>());
             } 
             else if (copiedObject.tag == "Bullet") {
                 Destroy(copiedObject.GetComponent<CapsuleCollider>());
@@ -102,16 +103,7 @@ public class Teleportable : MonoBehaviour
 
     void teleportObject(Vector3 pos){
         Debug.Log("TELEPORTING");
-
-        if(this.tag == "MainCamera"){
-            this.gameObject.GetComponent<FirstPersonController>().enabled = false; 
-            this.gameObject.transform.position = pos;
-            this.gameObject.transform.rotation = this.copiedObject.transform.rotation;
-            Invoke("enableFPC", 1f);
-        }else{
-            this.gameObject.transform.rotation = this.copiedObject.transform.rotation;
-            this.gameObject.transform.position = pos;
-        }
-        
+        this.gameObject.transform.rotation = this.copiedObject.transform.rotation;
+        this.gameObject.transform.position = pos;
     }
 }
