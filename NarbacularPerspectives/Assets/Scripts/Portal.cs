@@ -138,11 +138,18 @@ public class Portal
    
 
     public void updateNearClipPlane() {
-        Camera cam = otherPortal.portalCam.GetComponent<Camera>();
-        Vector3 cameraPosition = cam.transform.position;
-        Vector3 quadPosition = actualPlane.transform.position;
-        float distToQuad = (quadPosition - cameraPosition).magnitude;
-        cam.nearClipPlane = distToQuad;
+        //Camera cam = otherPortal.portalCam.GetComponent<Camera>();
+        //Vector3 cameraPosition = cam.transform.position;
+        //Vector3 quadPosition = actualPlane.transform.position;
+        //float distToQuad = (quadPosition - cameraPosition).magnitude;
+        //cam.nearClipPlane = distToQuad;
+
+        // Proper oblique clipping plane technique thanks to: https://danielilett.com/2019-12-18-tut4-3-matrix-matching/
+        normalVec.Normalize();
+        float dist = Mathf.Abs(Vector3.Dot(normalVec, actualPlane.transform.position));
+        Vector4 obliquePlane = new Vector4(reversePlane.transform.forward.x, reversePlane.transform.forward.y, reversePlane.transform.forward.z, dist);
+        Vector4 cameraSpaceObliquePlane = Matrix4x4.Transpose(Matrix4x4.Inverse(otherPortal.portalCam.GetComponent<Camera>().worldToCameraMatrix)) * obliquePlane;
+        otherPortal.portalCam.GetComponent<Camera>().projectionMatrix = playerObject.GetComponent<Camera>().CalculateObliqueMatrix(cameraSpaceObliquePlane);
     }
 
     private void updateCameraTexture() {
