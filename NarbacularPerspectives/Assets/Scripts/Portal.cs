@@ -69,13 +69,14 @@ public class Portal
 
         reversePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
         UnityEngine.Object.Destroy(reversePlane.GetComponent<MeshCollider>());
-        reversePlane.transform.position = gameObjectPos;
+        reversePlane.transform.position = gameObjectPos + 0.25f *(-normalVec);
         reversePlane.name = name + "reversePlane";
         reversePlane.transform.localScale = new Vector3(width, height, 1);
         reversePlane.transform.rotation = Quaternion.FromToRotation(Vector3.forward, normalVec);
+        reversePlane.AddComponent<MeshCollider>();
         //reversePlane.transform.rotation = Quaternion.LookRotation(normalVec, Vector3.up);
         //reversePlane.transform.Rotate(reversePlane.transform.forward, 180);
-        reversePlane.SetActive(false);
+        //reversePlane.SetActive(false);
         upDir = this.actualPlane.transform.up;
 
         this.setupTrigger();
@@ -92,8 +93,8 @@ public class Portal
        
         BoxCollider tempColl = actualPlane.gameObject.AddComponent<BoxCollider>();
         tempColl.isTrigger = true;
-        tempColl.size = new Vector3(1,1,0.50f);
-        tempColl.center += new Vector3(0,0,-.25f);
+        tempColl.size = new Vector3(1,1,0.30f);
+        tempColl.center += new Vector3(0,0,-.20f);
     }
 
 
@@ -111,6 +112,7 @@ public class Portal
            
          
             Vector3 relativePos = actualPlane.transform.InverseTransformPoint(playerObject.transform.position);
+            //Debug.Log(actualPlane.name + otherPortal.reversePlane.name + relativePos);
             this.portalCam.transform.position = this.otherPortal.reversePlane.transform.TransformPoint(relativePos);
             //this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.right, 180);
             

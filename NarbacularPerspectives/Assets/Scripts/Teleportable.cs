@@ -12,6 +12,10 @@ public class Teleportable : MonoBehaviour
     GameObject copiedObject; 
 
     Vector3 lastKnownSwapPos;
+
+    float deadzone = 0.4f;
+
+    public bool teleported = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,21 +25,40 @@ public class Teleportable : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
-        //Debug.Log("update");  
+        //Debug.Log("update");  -  deadzone *(telePortal.normalVec)
         if(insidePortal){
-            //if(this.gameObject.tag == "MainCamera"){
+            
+            pastHalfway = Vector3.Dot(telePortal.normalVec, this.gameObject.transform.position - telePortal.actualPlane.transform.position ) > 0 ? false: true;
+            if (pastHalfway && gameObject.tag == "MainCamera") {
+                teleported = true;
+                teleportObject(copiedObject.transform.position +  deadzone *(telePortal.otherPortal.normalVec));
+                insidePortal = false;
+                Destroy(copiedObject);
+            } else{
                 Vector3 relativePos = telePortal.actualPlane.transform.InverseTransformPoint(this.gameObject.transform.position);
-                lastKnownSwapPos = this.telePortal.otherPortal.reversePlane.transform.TransformPoint(relativePos);
-                this.copiedObject.transform.position = lastKnownSwapPos;
-            //}
+                this.copiedObject.transform.position  = this.telePortal.otherPortal.reversePlane.transform.TransformPoint(relativePos);
+
+                //Vector3 relativePos = actualPlane.transform.InverseTransformPoint(playerObject.transform.position);
+                //this.portalCam.transform.position = this.otherPortal.reversePlane.transform.TransformPoint(relativePos);
+
+             
+
+            }
+            
+
+
+
+            
         }
     }
 
     private void OnTriggerEnter(Collider other){
+        
         Debug.Log("ON TRIGGER ENTER START");
         ignoreUpdate = false;
         if (Portal.portalTable.ContainsKey(other.gameObject)) {
             telePortal = Portal.portalTable[other.gameObject];
+            telePortal.reversePlane.GetComponent<MeshCollider>().enabled = false;
             insidePortal = true;
             copiedObject = Instantiate(this.gameObject);
             if(copiedObject.tag == "MainCamera"){
@@ -60,6 +83,11 @@ public class Teleportable : MonoBehaviour
 
     private void OnTriggerExit(Collider other){
         Debug.Log("ON TRIGGER EXIT START");
+        if(teleported){
+            teleported = false;
+            telePortal.reversePlane.GetComponent<MeshCollider>().enabled = true;
+            return;
+        }
         pastHalfway = Vector3.Dot(telePortal.normalVec, this.gameObject.transform.position - telePortal.actualPlane.transform.position) > 0 ? false: true;
         if (pastHalfway) {
             teleportObject(copiedObject.transform.position);
@@ -79,8 +107,7 @@ public class Teleportable : MonoBehaviour
         if(this.tag == "MainCamera"){
             this.gameObject.GetComponent<FirstPersonController>().enabled = false; 
             this.gameObject.transform.position = pos;
-            //this.gameObject.GetComponent<FirstPersonController>().enabled = true;
-            Invoke("enableFPC", 0.05f);
+            Invoke("enableFPC", 0.02f);
         }else{
             this.gameObject.transform.position = pos;
         }

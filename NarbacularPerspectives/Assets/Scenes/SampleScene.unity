@@ -335,6 +335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01b93f6d7d98ebd4eb47328aa9690e0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teleported: 0
 --- !u!1 &980435220
 GameObject:
   m_ObjectHideFlags: 0
@@ -720,7 +721,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.19
+      value: 4.2
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: m_LocalRotation.x
@@ -769,17 +770,17 @@ PrefabInstance:
     - target: {fileID: 3397905360407568167, guid: 5e9e851c0e142814dac026a256ba2ac0,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.447
+      value: 0.24
       objectReference: {fileID: 0}
     - target: {fileID: 3397905360407568167, guid: 5e9e851c0e142814dac026a256ba2ac0,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.675
+      value: 0.67
       objectReference: {fileID: 0}
     - target: {fileID: 3397905360407568167, guid: 5e9e851c0e142814dac026a256ba2ac0,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.319
+      value: 0.32
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: m_MouseLook.clampVerticalRotation
@@ -800,6 +801,10 @@ PrefabInstance:
     - target: {fileID: 2000000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: m_NormalizedViewPortRect.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.33
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
@@ -1348,6 +1353,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01b93f6d7d98ebd4eb47328aa9690e0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teleported: 0
 --- !u!1 &3397905360407397127 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3397905360407397127, guid: 5e9e851c0e142814dac026a256ba2ac0,
