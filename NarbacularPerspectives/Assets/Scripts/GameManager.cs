@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         portalList = new List<Portal>();
-        TestPortals();
+        //TestPortals();
     }
 
     void TestPortals()
