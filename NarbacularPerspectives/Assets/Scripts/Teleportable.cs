@@ -45,10 +45,14 @@ public class Teleportable : MonoBehaviour
                 // Rotate Clone
                 Vector3 relativeRot = telePortal.actualPlane.transform.InverseTransformDirection(this.gameObject.transform.rotation * Vector3.right);
                 this.copiedObject.transform.rotation = Quaternion.LookRotation(this.telePortal.otherPortal.reversePlane.transform.TransformDirection(relativeRot), Vector3.up);
+                //Debug.Log(this.copiedObject.transform.eulerAngles[2]);
                 this.copiedObject.transform.RotateAround(this.copiedObject.transform.position, this.copiedObject.transform.up, -90);
+                //Debug.Log(this.copiedObject.transform.eulerAngles[2]);
 
                 if (this.copiedObject.transform.eulerAngles[2] == 180 || this.copiedObject.transform.eulerAngles[2] == -180 || telePortal.normalVec == telePortal.otherPortal.normalVec) {
                     this.copiedObject.transform.RotateAround(this.telePortal.otherPortal.actualPlane.transform.position, this.telePortal.otherPortal.actualPlane.transform.forward, 180);
+                    this.copiedObject.transform.RotateAround(this.copiedObject.transform.position, this.copiedObject.transform.right, 180);
+                    //Debug.Log("MADE IT IN HERE");
                 }
 
             }    
@@ -79,6 +83,7 @@ public class Teleportable : MonoBehaviour
                 Destroy(copiedObject.GetComponent<FirstPersonAIO>());
                 Destroy(copiedObject.GetComponent<Teleportable>());
                 Destroy(copiedObject.GetComponent<CapsuleCollider>());
+                Destroy(copiedObject.transform.GetChild(0).GetChild(0).GetComponentInChildren<PortalCreation>());            
             } 
             else if (copiedObject.tag == "Bullet") {
                 Destroy(copiedObject.GetComponent<CapsuleCollider>());
