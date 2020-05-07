@@ -45,9 +45,7 @@ public class Teleportable : MonoBehaviour
                 // Rotate Clone
                 Vector3 relativeRot = telePortal.actualPlane.transform.InverseTransformDirection(this.gameObject.transform.rotation * Vector3.right);
                 this.copiedObject.transform.rotation = Quaternion.LookRotation(this.telePortal.otherPortal.reversePlane.transform.TransformDirection(relativeRot), Vector3.up);
-                //Debug.Log(this.copiedObject.transform.eulerAngles[2]);
                 this.copiedObject.transform.RotateAround(this.copiedObject.transform.position, this.copiedObject.transform.up, -90);
-                //Debug.Log(this.copiedObject.transform.eulerAngles[2]);
 
                 if (this.copiedObject.transform.eulerAngles[2] == 180 || this.copiedObject.transform.eulerAngles[2] == -180 || telePortal.normalVec == telePortal.otherPortal.normalVec) {
                     this.copiedObject.transform.RotateAround(this.telePortal.otherPortal.actualPlane.transform.position, this.telePortal.otherPortal.actualPlane.transform.forward, 180);
@@ -122,9 +120,13 @@ public class Teleportable : MonoBehaviour
     void teleportObject(Vector3 pos){
         this.gameObject.GetComponent<FirstPersonAIO>().enableCameraMovement = false;
         
-        this.gameObject.transform.eulerAngles = this.copiedObject.transform.eulerAngles;
-        this.gameObject.GetComponent<FirstPersonAIO>().targetAngles = this.copiedObject.transform.rotation.eulerAngles;
-        this.gameObject.GetComponent<FirstPersonAIO>().followAngles = this.copiedObject.transform.rotation.eulerAngles;
+        Vector3 cameraRot = new Vector3(-this.gameObject.transform.GetChild(0).GetChild(1).transform.rotation.eulerAngles[0], this.copiedObject.transform.eulerAngles[1], this.copiedObject.transform.eulerAngles[2]);
+        Vector3 bodyRot = new Vector3(this.copiedObject.transform.eulerAngles[0], this.copiedObject.transform.eulerAngles[1], this.copiedObject.transform.eulerAngles[2]);
+        this.gameObject.transform.eulerAngles = bodyRot;
+        this.gameObject.GetComponent<FirstPersonAIO>().targetAngles = cameraRot;
+        this.gameObject.GetComponent<FirstPersonAIO>().followAngles = cameraRot;
+
+        //this.gameObject.transform.GetChild(0).GetChild(1).transform.eulerAngles = cameraRot;
 
         this.gameObject.transform.position = pos;
         this.gameObject.GetComponent<FirstPersonAIO>().enableCameraMovement = true;
