@@ -115,8 +115,13 @@ public class Teleportable : MonoBehaviour
 
 
     void teleportObject(Vector3 pos){
-        Debug.Log("TELEPORTING");
-        this.gameObject.transform.rotation = this.copiedObject.transform.rotation;
+        this.gameObject.GetComponent<FirstPersonAIO>().enableCameraMovement = false;
+        
+        this.gameObject.transform.eulerAngles = this.copiedObject.transform.eulerAngles;
+        this.gameObject.GetComponent<FirstPersonAIO>().targetAngles = this.copiedObject.transform.rotation.eulerAngles;
+        this.gameObject.GetComponent<FirstPersonAIO>().followAngles = this.copiedObject.transform.rotation.eulerAngles;
+
         this.gameObject.transform.position = pos;
+        this.gameObject.GetComponent<FirstPersonAIO>().enableCameraMovement = true;
     }
 }

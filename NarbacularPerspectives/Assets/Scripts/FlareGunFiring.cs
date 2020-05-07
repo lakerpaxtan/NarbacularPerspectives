@@ -8,6 +8,8 @@ public class FlareGunFiring : MonoBehaviour
     public AudioSource firingSound;
     public int forceConst;
     public GameObject flareBullet; 
+
+    public GameObject player;
     void Start()
     {
         firingSound = GetComponent<AudioSource>();
@@ -35,12 +37,16 @@ public class FlareGunFiring : MonoBehaviour
 
     //In your on collisionenter script, call the onHit from the target if a hit is detected.
     void fireFlareGun(){
-        fireFlareGunSounds();
-        GameObject newBullet = GameObject.Instantiate(flareBullet, this.transform.position + 0.25f * this.transform.forward + 0.1f * this.transform.up, this.transform.rotation);
-        newBullet.transform.RotateAround(newBullet.transform.position, newBullet.transform.right, 90f);
-        newBullet.GetComponent<Rigidbody>().AddForce(forceConst * this.transform.forward);
-        Destroy(newBullet, 3f);
-
+        // fireFlareGunSounds();
+        // GameObject newBullet = GameObject.Instantiate(flareBullet, this.transform.position + 0.25f * this.transform.forward + 0.1f * this.transform.up, this.transform.rotation);
+        // newBullet.transform.RotateAround(newBullet.transform.position, newBullet.transform.right, 90f);
+        // newBullet.GetComponent<Rigidbody>().AddForce(forceConst * this.transform.forward);
+        // Destroy(newBullet, 3f);
+        player.GetComponent<FirstPersonAIO>().enableCameraMovement = false;
+        player.transform.eulerAngles = new Vector3(0,90,0);
+        player.GetComponent<FirstPersonAIO>().targetAngles = new Vector3(0,90,0);
+        player.GetComponent<FirstPersonAIO>().followAngles = new Vector3(0,90,0);
+        player.GetComponent<FirstPersonAIO>().enableCameraMovement = true;
     }
 
     void fireFlareGunSounds(){

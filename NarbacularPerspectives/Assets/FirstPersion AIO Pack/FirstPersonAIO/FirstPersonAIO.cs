@@ -85,9 +85,9 @@ public class FirstPersonAIO : MonoBehaviour {
     Image StaminaMeterBG;
     public Sprite Crosshair;
     public Vector3 targetAngles;
-    private Vector3 followAngles;
+    public Vector3 followAngles;
     private Vector3 followVelocity;
-    private Vector3 originalRotation;
+    public Vector3 originalRotation;
     #endregion
 
     #region Movement Settings
@@ -356,8 +356,8 @@ public class BETA_SETTINGS{
             targetAngles.y = Mathf.Clamp(targetAngles.y, -0.5f * Mathf.Infinity, 0.5f * Mathf.Infinity);
             targetAngles.x = Mathf.Clamp(targetAngles.x, -0.5f * verticalRotationRange, 0.5f * verticalRotationRange);
             followAngles = Vector3.SmoothDamp(followAngles, targetAngles, ref followVelocity, (cameraSmoothing)/100);
-            playerCamera.transform.localRotation = Quaternion.Euler(-followAngles.x + originalRotation.x,0,0);
-            transform.localRotation =  Quaternion.Euler(0, followAngles.y+originalRotation.y, 0);
+            playerCamera.transform.localRotation = Quaternion.Euler(-followAngles.x /*+ originalRotation.x*/,0,0);
+            transform.localRotation =  Quaternion.Euler(0, followAngles.y /*+originalRotation.y */, 0);
         }
     
         #endregion

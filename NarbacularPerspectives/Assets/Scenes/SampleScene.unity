@@ -333,6 +333,7 @@ MonoBehaviour:
   forceConst: 1000
   flareBullet: {fileID: 6753973996053316427, guid: 61009e0be2b5fa54784d3ca90bb26b95,
     type: 3}
+  player: {fileID: 1909665583}
 --- !u!1 &980435220
 GameObject:
   m_ObjectHideFlags: 0
@@ -790,12 +791,17 @@ PrefabInstance:
     - target: {fileID: 114364040117789052, guid: 2e62f5703e5f8d2488a5e1bc8433be41,
         type: 3}
       propertyPath: mouseSensitivity
-      value: 5
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 114364040117789052, guid: 2e62f5703e5f8d2488a5e1bc8433be41,
         type: 3}
       propertyPath: mouseSensitivityInternal
-      value: 5
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114364040117789052, guid: 2e62f5703e5f8d2488a5e1bc8433be41,
+        type: 3}
+      propertyPath: cameraSmoothing
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4357047354925838, guid: 2e62f5703e5f8d2488a5e1bc8433be41, type: 3}
       propertyPath: m_LocalPosition.z

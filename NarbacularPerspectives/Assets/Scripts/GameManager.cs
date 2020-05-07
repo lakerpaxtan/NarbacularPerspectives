@@ -15,6 +15,10 @@ public class GameManager : MonoBehaviour
 
     List<Portal> portalList;
 
+    void Awake() {
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
     
 
 
