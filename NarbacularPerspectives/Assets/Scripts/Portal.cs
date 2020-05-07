@@ -16,7 +16,6 @@ public class Portal
     public GameObject actualPlane;
     public GameObject reversePlane;
     public GameObject borderPlane;
-    private Vector3 upDir;
     float width;
     float height;
     private GameObject playerObject; 
@@ -54,15 +53,8 @@ public class Portal
         actualPlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
         actualPlane.transform.position = gameObjectPos;
         actualPlane.name = name;
-        //upDir = new Vector3(topLeftCoord[0] - top)
         actualPlane.transform.localScale = new Vector3(width, height, 1);
-
         actualPlane.transform.rotation = Quaternion.FromToRotation(Vector3.forward, -normalVec);
-
-        // if (portalCam.transform.eulerAngles[2] == 180 || portalCam.transform.eulerAngles[2] == -180 || normalVec == otherPortal.normalVec){
-        //     this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.forward, 180);
-        // }
-        //actualPlane.transform.rotation = Quaternion.LookRotation(-normalVec, Vector3.up);
 
         borderPlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
         UnityEngine.Object.Destroy(borderPlane.GetComponent<MeshCollider>());
@@ -76,26 +68,23 @@ public class Portal
         reversePlane.transform.position = gameObjectPos + 0.25f *(-normalVec);
         reversePlane.name = name + "reversePlane";
         reversePlane.transform.localScale = new Vector3(width, height, 1);
-        //reversePlane.transform.rotation = Quaternion.FromToRotation(Vector3.forward, normalVec);
         reversePlane.AddComponent<MeshCollider>();
         reversePlane.transform.rotation = Quaternion.LookRotation(normalVec, -actualPlane.transform.up);
-        //reversePlane.transform.Rotate(reversePlane.transform.forward, 180);
-        //reversePlane.SetActive(false);
-        //reversePlane.transform.RotateAround(reversePlane.transform.position, reversePlane.transform.right, 180);
-        
-        
-        upDir = this.actualPlane.transform.up;
+
+        actualPlane.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        actualPlane.GetComponent<MeshRenderer>().receiveShadows = false;
+
+        borderPlane.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        borderPlane.GetComponent<MeshRenderer>().receiveShadows = false;
+
+        reversePlane.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        reversePlane.GetComponent<MeshRenderer>().receiveShadows = false;
 
         this.setupTrigger();
-
-
-
-
         portalTable.Add(actualPlane, this);
-
     }
 
-    private void setupTrigger(){
+    private void setupTrigger() {
         UnityEngine.Object.Destroy(this.actualPlane.gameObject.GetComponent<MeshCollider>()); 
        
         BoxCollider tempColl = actualPlane.gameObject.AddComponent<BoxCollider>();
@@ -105,44 +94,28 @@ public class Portal
     }
 
 
-    private void createPortalCamera(){
+    private void createPortalCamera() {
         this.portalCam = new GameObject();
         portalCam.AddComponent<Camera>().enabled = false;
         portalCam.name = name + "Cam"; 
     }
 
 
-    public void updateCameraRelativeToPlayer(){
-        if (isPaired){
-
-            //Debug.Log(this.playerObject.transform.eulerAngles);
-           
-         
+    public void updateCameraRelativeToPlayer() {
+        if (isPaired) {
             Vector3 relativePos = actualPlane.transform.InverseTransformPoint(playerObject.transform.position);
-            //Debug.Log(actualPlane.name + otherPortal.reversePlane.name + relativePos);
             this.portalCam.transform.position = this.otherPortal.reversePlane.transform.TransformPoint(relativePos);
-            //this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.right, 180);
-            
-           
-            //this.portalCam.transform.up = this.otherPortal.reversePlane.transform.up;
-            //this.portalCam.transform.Rotate(this.portalCam.transform.up, 180);
+
             Quaternion relativeRot = Quaternion.FromToRotation(-normalVec, this.otherPortal.normalVec);
             this.portalCam.transform.rotation = relativeRot * this.playerObject.transform.rotation;
-          
-
-            // if (normalVec == otherPortal.normalVec) {
-            //     this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.forward, 180);
-            // } 
 
             if (portalCam.transform.eulerAngles[2] == 180 || portalCam.transform.eulerAngles[2] == -180 || normalVec == otherPortal.normalVec){
                 this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.forward, 180);
             }
-
-
         }
     }
 
-    public static void pairPortals(Portal portal1, Portal portal2){
+    public static void pairPortals(Portal portal1, Portal portal2) {
         portal1.isPaired = true;
         portal2.isPaired = true; 
 
@@ -151,7 +124,7 @@ public class Portal
 
     }
 
-    public void texturePortal(){
+    public void texturePortal() {
         actualPlane.GetComponent<Renderer>().material.shader = portalShader;
         otherPortal.actualPlane.GetComponent<Renderer>().material.shader = portalShader;
 
@@ -168,12 +141,6 @@ public class Portal
    
 
     public void updateNearClipPlane() {
-        //Camera cam = otherPortal.portalCam.GetComponent<Camera>();
-        //Vector3 cameraPosition = cam.transform.position;
-        //Vector3 quadPosition = actualPlane.transform.position;
-        //float distToQuad = (quadPosition - cameraPosition).magnitude;
-        //cam.nearClipPlane = distToQuad;
-
         // Proper oblique clipping plane technique thanks to: https://danielilett.com/2019-12-18-tut4-3-matrix-matching/
         normalVec.Normalize();
         float dist = -(Vector3.Dot(normalVec, actualPlane.transform.position));
