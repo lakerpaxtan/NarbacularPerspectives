@@ -15,7 +15,7 @@ public class Portal
 
     public GameObject actualPlane;
     public GameObject reversePlane;
-    private GameObject borderPlane;
+    public GameObject borderPlane;
     private Vector3 upDir;
     float width;
     float height;
@@ -101,7 +101,7 @@ public class Portal
         BoxCollider tempColl = actualPlane.gameObject.AddComponent<BoxCollider>();
         tempColl.isTrigger = true;
         tempColl.size = new Vector3(1,1,0.30f);
-        tempColl.center += new Vector3(0,0,-.20f);
+        tempColl.center += new Vector3(0,0,-.10f);
     }
 
 

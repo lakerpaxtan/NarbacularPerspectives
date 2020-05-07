@@ -13,7 +13,7 @@ public class Teleportable : MonoBehaviour
 
     Vector3 lastKnownSwapPos;
 
-    float deadzone = 0.5f;
+    float deadzone = 0.30f;
 
     public bool teleported = false;
     // Start is called before the first frame update
@@ -29,8 +29,13 @@ public class Teleportable : MonoBehaviour
             
             pastHalfway = Vector3.Dot(telePortal.normalVec, this.gameObject.transform.position - telePortal.actualPlane.transform.position ) > 0 ? false: true;
             if (pastHalfway && gameObject.tag == "Player") {
+                Debug.Log("special boi");
                 teleported = true;
+                telePortal.otherPortal.reversePlane.SetActive(false);
+                //Debug.Log("disable" + telePortal.otherPortal.borderPlane.name);
+                //telePortal.borderPlane.SetActive(false);
                 teleportObject(copiedObject.transform.position +  deadzone *(telePortal.otherPortal.normalVec));
+                //telePortal.borderPlane.SetActive(true);
                 insidePortal = false;
                 Destroy(copiedObject);
             } else {
@@ -56,10 +61,13 @@ public class Teleportable : MonoBehaviour
         ignoreUpdate = false;
         if (Portal.portalTable.ContainsKey(other.gameObject)) {
             telePortal = Portal.portalTable[other.gameObject];
-            telePortal.reversePlane.GetComponent<MeshCollider>().enabled = false;
+            //telePortal.otherPortal.reversePlane.SetActive(false);
+            //Debug.Log("disable" + telePortal.borderPlane.name);
+            
             insidePortal = true;
             copiedObject = Instantiate(this.gameObject);
             if(copiedObject.tag == "Player"){
+                telePortal.borderPlane.SetActive(false);
                 Destroy(copiedObject.GetComponent<FirstPersonController>());
                 Destroy(copiedObject.GetComponent<AudioSource>());
                 copiedObject.GetComponent<Rigidbody>().isKinematic = true;
@@ -83,8 +91,11 @@ public class Teleportable : MonoBehaviour
     private void OnTriggerExit(Collider other){
         Debug.Log("ON TRIGGER EXIT START");
         if(teleported){
+            Debug.Log("ultiamte boi");
             teleported = false;
-            telePortal.reversePlane.GetComponent<MeshCollider>().enabled = true;
+            telePortal.otherPortal.reversePlane.SetActive(false);
+            //Debug.Log("enable" + telePortal.borderPlane.name);
+            telePortal.borderPlane.SetActive(true);
             return;
         }
         pastHalfway = Vector3.Dot(telePortal.normalVec, this.gameObject.transform.position - telePortal.actualPlane.transform.position) > 0 ? false: true;
@@ -93,6 +104,8 @@ public class Teleportable : MonoBehaviour
         }
         insidePortal = false;
         Destroy(copiedObject);
+        telePortal.reversePlane.SetActive(true);
+        telePortal.borderPlane.SetActive(true);
         Debug.Log("ON TRIGGER EXIT STOP");
     }
 
