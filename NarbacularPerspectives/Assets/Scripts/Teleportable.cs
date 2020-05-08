@@ -66,6 +66,10 @@ public class Teleportable : MonoBehaviour
             //telePortal.otherPortal.reversePlane.SetActive(false);
             //Debug.Log("disable" + telePortal.borderPlane.name);
             
+            if (telePortal.attachedTo){
+                telePortal.attachedTo.GetComponent<Collider>().enabled = false;
+            }
+
             insidePortal = true;
             copiedObject = Instantiate(this.gameObject);
             if(copiedObject.tag == "Player"){
@@ -104,12 +108,16 @@ public class Teleportable : MonoBehaviour
         pastHalfway = Vector3.Dot(telePortal.normalVec, this.gameObject.transform.position - telePortal.actualPlane.transform.position) > 0 ? false: true;
         if (pastHalfway) {
             teleportObject(copiedObject.transform.position);
+            
         }
         insidePortal = false;
         Destroy(copiedObject);
         telePortal.reversePlane.SetActive(true);
         telePortal.borderPlane.SetActive(true);
         Debug.Log("ON TRIGGER EXIT STOP");
+        if (telePortal.attachedTo){
+                telePortal.attachedTo.GetComponent<Collider>().enabled = true;
+            }
     }
 
     void enableFPC() {
@@ -118,17 +126,25 @@ public class Teleportable : MonoBehaviour
 
 
     void teleportObject(Vector3 pos){
-        this.gameObject.GetComponent<FirstPersonAIO>().enableCameraMovement = false;
+
+        if (this.tag == "Player"){
+             this.gameObject.GetComponent<FirstPersonAIO>().enableCameraMovement = false;
         
-        Vector3 cameraRot = new Vector3(-this.gameObject.transform.GetChild(0).GetChild(1).transform.rotation.eulerAngles[0], this.copiedObject.transform.eulerAngles[1], this.copiedObject.transform.eulerAngles[2]);
-        Vector3 bodyRot = new Vector3(this.copiedObject.transform.eulerAngles[0], this.copiedObject.transform.eulerAngles[1], this.copiedObject.transform.eulerAngles[2]);
-        this.gameObject.transform.eulerAngles = bodyRot;
-        this.gameObject.GetComponent<FirstPersonAIO>().targetAngles = cameraRot;
-        this.gameObject.GetComponent<FirstPersonAIO>().followAngles = cameraRot;
+            Vector3 cameraRot = new Vector3(-this.gameObject.transform.GetChild(0).GetChild(1).transform.rotation.eulerAngles[0], this.copiedObject.transform.eulerAngles[1], this.copiedObject.transform.eulerAngles[2]);
+            Vector3 bodyRot = new Vector3(this.copiedObject.transform.eulerAngles[0], this.copiedObject.transform.eulerAngles[1], this.copiedObject.transform.eulerAngles[2]);
+            this.gameObject.transform.eulerAngles = bodyRot;
+            this.gameObject.GetComponent<FirstPersonAIO>().targetAngles = cameraRot;
+            this.gameObject.GetComponent<FirstPersonAIO>().followAngles = cameraRot;
 
-        //this.gameObject.transform.GetChild(0).GetChild(1).transform.eulerAngles = cameraRot;
+            //this.gameObject.transform.GetChild(0).GetChild(1).transform.eulerAngles = cameraRot;
 
-        this.gameObject.transform.position = pos;
-        this.gameObject.GetComponent<FirstPersonAIO>().enableCameraMovement = true;
+            this.gameObject.transform.position = pos;
+            this.gameObject.GetComponent<FirstPersonAIO>().enableCameraMovement = true;
+        } else{
+            
+            this.gameObject.transform.eulerAngles = this.copiedObject.transform.eulerAngles;
+            this.gameObject.transform.position = this.copiedObject.transform.position;
+        }
+       
     }
 }

@@ -10,6 +10,7 @@ public class Portal
     private Vector3 gameObjectPos;
     public Vector3 normalVec;
     public Portal otherPortal;
+    public GameObject attachedTo;
 
     private GameObject portalCam;
 

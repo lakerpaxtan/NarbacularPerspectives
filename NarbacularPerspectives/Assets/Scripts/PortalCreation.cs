@@ -17,6 +17,8 @@ public class PortalCreation : MonoBehaviour
 
     // set size of portal
     public LineRenderer outlineA;
+    public GameObject attachedToA;
+    public GameObject attachedToB;
     public LineRenderer outlineB;
     Vector3 normA;
     Vector3 normB;
@@ -82,6 +84,7 @@ public class PortalCreation : MonoBehaviour
                     {
                         stage = 1;
                         StartA(hit.point, hit.normal);
+                        attachedToA = hit.transform.gameObject;
                     }
                     else if (stage == 1)
                     {
@@ -131,6 +134,7 @@ public class PortalCreation : MonoBehaviour
         } else if (stage == 2 && hit.collider)
         {
             SetB(hit.point, hit.normal, hit.collider);
+            attachedToB = hit.transform.gameObject;
             //DrawB(hit.point, hit.normal);
         }
 
@@ -279,7 +283,9 @@ public class PortalCreation : MonoBehaviour
         Vector3 midB = (outlineB.GetPosition(0) + outlineB.GetPosition(2)) / 2;
 
         portalA = new Portal(width, height, midA, normA, player, "a" + numPortals);
+        portalA.attachedTo = attachedToA;
         portalB = new Portal(width, height, midB, normB, player, "b" + numPortals);
+        portalB.attachedTo = attachedToB;
         Portal.pairPortals(portalA, portalB);
         gameManager.GetComponent<GameManager>().portalList.Add(portalA);
 
