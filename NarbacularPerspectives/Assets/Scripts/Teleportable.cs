@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
 public class Teleportable : MonoBehaviour
 {
-    bool insidePortal = false;
+    public bool insidePortal = false;
     bool pastHalfway = false;
     Portal telePortal;
     bool ignoreUpdate = false;
@@ -48,10 +48,16 @@ public class Teleportable : MonoBehaviour
 
     private void OnTriggerEnter(Collider other) {
         ignoreUpdate = false;
-        if (Portal.portalTable.ContainsKey(other.gameObject)) {
+        //Not inside portal is to make sure you arent already in a portal bc they are too close together
+        if (Portal.portalTable.ContainsKey(other.gameObject) && !insidePortal) {
             telePortal = Portal.portalTable[other.gameObject];
+            
+
+            Debug.Log(telePortal.actualPlane.name + "enter");
+            
             if (telePortal.attachedTo){
                 telePortal.attachedTo.GetComponent<Collider>().enabled = false;
+                telePortal.otherPortal.reversePlane.SetActive(false);
             }
             insidePortal = true;
             copiedObject = Instantiate(this.gameObject, this.gameObject.transform.position, this.gameObject.transform.rotation);
@@ -78,10 +84,21 @@ public class Teleportable : MonoBehaviour
     }
 
     private void OnTriggerExit(Collider other){
+        //Case where you enter another portal's trigger before exiting the original because they are back to back (too close together)
+        if(telePortal.actualPlane != other.gameObject){
+            Debug.Log("WOAH DUDE");
+            return;
+        }
+        Debug.Log(telePortal.actualPlane.name + "exit");
+        if(!telePortal.attachedTo){
+            telePortal.reversePlane.SetActive(true);
+        }
+        telePortal.borderPlane.SetActive(true);
         if (teleported) {
+            Debug.Log("blublu");
             teleported = false;
+            Debug.Log(telePortal.otherPortal.reversePlane.name);
             telePortal.otherPortal.reversePlane.SetActive(false);
-            telePortal.borderPlane.SetActive(true);
             return;
         }
         pastHalfway = Vector3.Dot(telePortal.normalVec, this.gameObject.transform.position - telePortal.actualPlane.transform.position) > 0 ? false: true;
@@ -90,9 +107,9 @@ public class Teleportable : MonoBehaviour
         }
         insidePortal = false;
         Destroy(copiedObject);
-        telePortal.reversePlane.SetActive(true);
-        telePortal.borderPlane.SetActive(true);
+        
         if (telePortal.attachedTo) {
+            Debug.Log("blah");
             telePortal.attachedTo.GetComponent<Collider>().enabled = true;
         }
     }

@@ -1115,27 +1115,27 @@ PrefabInstance:
     - target: {fileID: 136143396853349698, guid: 2e62f5703e5f8d2488a5e1bc8433be41,
         type: 3}
       propertyPath: m_Height
-      value: 2.07967
+      value: 1.9641025
       objectReference: {fileID: 0}
     - target: {fileID: 136143396853349698, guid: 2e62f5703e5f8d2488a5e1bc8433be41,
         type: 3}
       propertyPath: m_Center.y
-      value: 0.7938156
+      value: 0.6293372
       objectReference: {fileID: 0}
     - target: {fileID: 136143396853349698, guid: 2e62f5703e5f8d2488a5e1bc8433be41,
         type: 3}
       propertyPath: m_Radius
-      value: 0.55973417
+      value: 0.47785082
       objectReference: {fileID: 0}
     - target: {fileID: 136143396853349698, guid: 2e62f5703e5f8d2488a5e1bc8433be41,
         type: 3}
       propertyPath: m_Center.x
-      value: -0.19479614
+      value: -0.19479673
       objectReference: {fileID: 0}
     - target: {fileID: 136143396853349698, guid: 2e62f5703e5f8d2488a5e1bc8433be41,
         type: 3}
       propertyPath: m_Center.z
-      value: -0.31346726
+      value: 0.021890316
       objectReference: {fileID: 0}
     - target: {fileID: 114364040117789052, guid: 2e62f5703e5f8d2488a5e1bc8433be41,
         type: 3}
@@ -1794,6 +1794,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01b93f6d7d98ebd4eb47328aa9690e0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  insidePortal: 0
   teleported: 0
 --- !u!1 &1922980250
 GameObject:
@@ -1990,4 +1991,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01b93f6d7d98ebd4eb47328aa9690e0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  insidePortal: 0
   teleported: 0

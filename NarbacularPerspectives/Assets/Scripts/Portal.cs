@@ -81,6 +81,10 @@ public class Portal
         reversePlane.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         reversePlane.GetComponent<MeshRenderer>().receiveShadows = false;
 
+        if(!attachedTo){
+            reversePlane.SetActive(false);
+        }
+
         this.setupTrigger();
         portalTable.Add(actualPlane, this);
     }
@@ -90,8 +94,8 @@ public class Portal
        
         BoxCollider tempColl = actualPlane.gameObject.AddComponent<BoxCollider>();
         tempColl.isTrigger = true;
-        tempColl.size = new Vector3(1,1,0.30f);
-        tempColl.center += new Vector3(0,0,-.10f);
+        tempColl.size = new Vector3(1,1,0.70f);
+        //tempColl.center += new Vector3(0,0,-.10f);
     }
 
 
