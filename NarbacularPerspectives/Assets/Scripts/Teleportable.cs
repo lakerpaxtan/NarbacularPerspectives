@@ -4,38 +4,29 @@ using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
 public class Teleportable : MonoBehaviour
 {
-    
     bool insidePortal = false;
     bool pastHalfway = false;
     Portal telePortal;
     bool ignoreUpdate = false;
     GameObject copiedObject; 
-
-    Vector3 lastKnownSwapPos;
-
     float deadzone = 0.30f;
-
     public bool teleported = false;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {   
         if(insidePortal){
-            
             pastHalfway = Vector3.Dot(telePortal.normalVec, this.gameObject.transform.position - telePortal.actualPlane.transform.position ) > 0 ? false: true;
             if (pastHalfway && gameObject.tag == "Player") {
-                Debug.Log("special boi");
                 teleported = true;
                 telePortal.otherPortal.reversePlane.SetActive(false);
-                //Debug.Log("disable" + telePortal.otherPortal.borderPlane.name);
-                //telePortal.borderPlane.SetActive(false);
                 teleportObject(copiedObject.transform.position +  deadzone *(telePortal.otherPortal.normalVec));
-                //telePortal.borderPlane.SetActive(true);
                 insidePortal = false;
                 Destroy(copiedObject);
             } else {
@@ -50,28 +41,20 @@ public class Teleportable : MonoBehaviour
                 if (this.copiedObject.transform.eulerAngles[2] == 180 || this.copiedObject.transform.eulerAngles[2] == -180 || telePortal.normalVec == telePortal.otherPortal.normalVec) {
                     this.copiedObject.transform.RotateAround(this.telePortal.otherPortal.actualPlane.transform.position, this.telePortal.otherPortal.actualPlane.transform.forward, 180);
                     this.copiedObject.transform.RotateAround(this.copiedObject.transform.position, this.copiedObject.transform.right, 180);
-                    //Debug.Log("MADE IT IN HERE");
                 }
-
             }    
         }
     }
 
     private void OnTriggerEnter(Collider other) {
-        
-        Debug.Log("ON TRIGGER ENTER START");
         ignoreUpdate = false;
         if (Portal.portalTable.ContainsKey(other.gameObject)) {
             telePortal = Portal.portalTable[other.gameObject];
-            //telePortal.otherPortal.reversePlane.SetActive(false);
-            //Debug.Log("disable" + telePortal.borderPlane.name);
-            
             if (telePortal.attachedTo){
                 telePortal.attachedTo.GetComponent<Collider>().enabled = false;
             }
-
             insidePortal = true;
-            copiedObject = Instantiate(this.gameObject);
+            copiedObject = Instantiate(this.gameObject, this.gameObject.transform.position, this.gameObject.transform.rotation);
             if(copiedObject.tag == "Player"){
                 telePortal.borderPlane.SetActive(false);
                 Destroy(copiedObject.GetComponent<FirstPersonController>());
@@ -92,32 +75,26 @@ public class Teleportable : MonoBehaviour
                 Destroy(copiedObject.GetComponent<Teleportable>());
             }   
         }
-        Debug.Log("ON TRIGGER ENTER STOP");
     }
 
     private void OnTriggerExit(Collider other){
-        Debug.Log("ON TRIGGER EXIT START");
-        if(teleported){
-            Debug.Log("ultiamte boi");
+        if (teleported) {
             teleported = false;
             telePortal.otherPortal.reversePlane.SetActive(false);
-            //Debug.Log("enable" + telePortal.borderPlane.name);
             telePortal.borderPlane.SetActive(true);
             return;
         }
         pastHalfway = Vector3.Dot(telePortal.normalVec, this.gameObject.transform.position - telePortal.actualPlane.transform.position) > 0 ? false: true;
         if (pastHalfway) {
             teleportObject(copiedObject.transform.position);
-            
         }
         insidePortal = false;
         Destroy(copiedObject);
         telePortal.reversePlane.SetActive(true);
         telePortal.borderPlane.SetActive(true);
-        Debug.Log("ON TRIGGER EXIT STOP");
-        if (telePortal.attachedTo){
-                telePortal.attachedTo.GetComponent<Collider>().enabled = true;
-            }
+        if (telePortal.attachedTo) {
+            telePortal.attachedTo.GetComponent<Collider>().enabled = true;
+        }
     }
 
     void enableFPC() {
@@ -125,26 +102,23 @@ public class Teleportable : MonoBehaviour
     }
 
 
-    void teleportObject(Vector3 pos){
-
-        if (this.tag == "Player"){
-             this.gameObject.GetComponent<FirstPersonAIO>().enableCameraMovement = false;
-        
+    void teleportObject(Vector3 pos) {
+        if (this.tag == "Player") {
+            this.gameObject.GetComponent<FirstPersonAIO>().enableCameraMovement = false;       
             Vector3 cameraRot = new Vector3(-this.gameObject.transform.GetChild(0).GetChild(1).transform.rotation.eulerAngles[0], this.copiedObject.transform.eulerAngles[1], this.copiedObject.transform.eulerAngles[2]);
             Vector3 bodyRot = new Vector3(this.copiedObject.transform.eulerAngles[0], this.copiedObject.transform.eulerAngles[1], this.copiedObject.transform.eulerAngles[2]);
             this.gameObject.transform.eulerAngles = bodyRot;
             this.gameObject.GetComponent<FirstPersonAIO>().targetAngles = cameraRot;
             this.gameObject.GetComponent<FirstPersonAIO>().followAngles = cameraRot;
-
-            //this.gameObject.transform.GetChild(0).GetChild(1).transform.eulerAngles = cameraRot;
-
             this.gameObject.transform.position = pos;
             this.gameObject.GetComponent<FirstPersonAIO>().enableCameraMovement = true;
-        } else{
-            
-            this.gameObject.transform.eulerAngles = this.copiedObject.transform.eulerAngles;
+        } else if (this.tag == "Bullet") {
+            Rigidbody tempRB = this.GetComponent<Rigidbody>();
+            Vector3 tempVelocityMag = this.gameObject.transform.InverseTransformDirection(tempRB.velocity);
+            this.gameObject.transform.rotation = this.copiedObject.transform.rotation;
+            this.gameObject.transform.localRotation = this.copiedObject.transform.localRotation;
             this.gameObject.transform.position = this.copiedObject.transform.position;
+            tempRB.velocity = this.gameObject.transform.TransformDirection(tempVelocityMag);
         }
-       
     }
 }

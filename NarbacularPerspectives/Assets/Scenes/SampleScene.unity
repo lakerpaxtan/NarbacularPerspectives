@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -267,6 +267,8 @@ MonoBehaviour:
   doubleClickDelay: 0.2
   range: 50
   outlineA: {fileID: 1760325943}
+  attachedToA: {fileID: 0}
+  attachedToB: {fileID: 0}
   outlineB: {fileID: 1399703414}
   offset: 0.04
   player: {fileID: 8750997}
@@ -483,7 +485,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firingSound: {fileID: 0}
   forceConst: 1000
-  flareBullet: {fileID: 6753973996053316427, guid: 61009e0be2b5fa54784d3ca90bb26b95,
+  flareBullet: {fileID: 5045154709783476577, guid: 4f6cb612845218844803dade701e13c5,
     type: 3}
   player: {fileID: 1909665583}
 --- !u!1 &980435220
