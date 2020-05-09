@@ -9,7 +9,7 @@ public class Teleportable : MonoBehaviour
     Portal telePortal;
     bool ignoreUpdate = false;
     GameObject copiedObject; 
-    float deadzone = 0.30f;
+    float deadzone = 0.40f;
     public bool teleported = false;
 
     // Start is called before the first frame update
@@ -89,25 +89,35 @@ public class Teleportable : MonoBehaviour
             Debug.Log("WOAH DUDE");
             return;
         }
-        Debug.Log(telePortal.actualPlane.name + "exit");
+        //Resetting the reversePlane
         if(!telePortal.attachedTo){
             telePortal.reversePlane.SetActive(true);
         }
+        //Resetting the borderPlane
         telePortal.borderPlane.SetActive(true);
+
+        //Skipping if already pre-empted
         if (teleported) {
             Debug.Log("blublu");
             teleported = false;
-            Debug.Log(telePortal.otherPortal.reversePlane.name);
             telePortal.otherPortal.reversePlane.SetActive(false);
+            //Reset collider if teleported
+            if (telePortal.attachedTo) {
+                Debug.Log("blah");
+                telePortal.attachedTo.GetComponent<Collider>().enabled = true;
+            }
             return;
         }
+
+        //Checking if past halfway on exit
         pastHalfway = Vector3.Dot(telePortal.normalVec, this.gameObject.transform.position - telePortal.actualPlane.transform.position) > 0 ? false: true;
         if (pastHalfway) {
             teleportObject(copiedObject.transform.position);
         }
+
         insidePortal = false;
         Destroy(copiedObject);
-        
+        //Reset Collider if leaving
         if (telePortal.attachedTo) {
             Debug.Log("blah");
             telePortal.attachedTo.GetComponent<Collider>().enabled = true;
