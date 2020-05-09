@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
         portalList.Add(testPortal3);
 
         Portal testPortal5 = new Portal(4, 4, new Vector3(0f, 2, 8), new Vector3(0, 0, -1), playerObject, "testFive");
-        Portal testPortal6 = new Portal(4, 4, new Vector3(0f, 2, -8), new Vector3(0, 0, 1), playerObject, "testSix");
+        Portal testPortal6 = new Portal(3, 3, new Vector3(0f, 2, -8), new Vector3(0, 0, 1), playerObject, "testSix");
         Portal.pairPortals(testPortal5, testPortal6);
         portalList.Add(testPortal5);
     }

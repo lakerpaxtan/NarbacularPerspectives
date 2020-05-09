@@ -139,6 +139,10 @@ public class Teleportable : MonoBehaviour
             this.gameObject.GetComponent<FirstPersonAIO>().followAngles = cameraRot;
             this.gameObject.transform.position = pos;
             this.gameObject.GetComponent<FirstPersonAIO>().enableCameraMovement = true;
+
+            this.gameObject.transform.localScale = this.gameObject.transform.localScale * telePortal.scaleFactor;
+
+
         } else if (this.tag == "Bullet") {
             Rigidbody tempRB = this.GetComponent<Rigidbody>();
             Vector3 tempVelocityMag = this.gameObject.transform.InverseTransformDirection(tempRB.velocity);
@@ -146,6 +150,7 @@ public class Teleportable : MonoBehaviour
             this.gameObject.transform.localRotation = this.copiedObject.transform.localRotation;
             this.gameObject.transform.position = this.copiedObject.transform.position;
             tempRB.velocity = this.gameObject.transform.TransformDirection(tempVelocityMag);
+            this.gameObject.transform.localScale = this.gameObject.transform.localScale * telePortal.scaleFactor;
         }
     }
 }

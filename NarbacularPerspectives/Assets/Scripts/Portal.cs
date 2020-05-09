@@ -21,6 +21,7 @@ public class Portal
     float height;
     private GameObject playerObject; 
 
+    public float scaleFactor;
     private string name;
     private RenderTexture cameraTexture;
     public static Shader portalShader;
@@ -38,7 +39,6 @@ public class Portal
         normalVec.Normalize();
         playerObject = player;
         name = str;
-
         cameraTexture = new RenderTexture(Screen.width, Screen.height, 0);
         portalShader = Shader.Find("Unlit/PortalShader");
 
@@ -126,6 +126,9 @@ public class Portal
 
         portal1.otherPortal = portal2;
         portal2.otherPortal = portal1;
+
+        portal2.scaleFactor = (portal1.width * portal1.height) / (portal2.width * portal2.height);
+        portal1.scaleFactor = (portal2.width * portal2.height) /  (portal1.width * portal1.height);
 
     }
 
