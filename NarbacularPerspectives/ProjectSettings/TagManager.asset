@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Bullet
+  - Fire
+  - Portal
   layers:
   - Default
   - TransparentFX

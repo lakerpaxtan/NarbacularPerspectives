@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,6 +22,10 @@ public class PortalCreation : MonoBehaviour
     Vector3 normA;
     Vector3 normB;
     public float offset = 0.04f;
+
+    float scale;
+    public Text scaleText;
+
 
     // portal meta
     public GameObject player;
@@ -64,7 +67,13 @@ public class PortalCreation : MonoBehaviour
         Ray ray = new Ray(transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction);
         Physics.Raycast(ray, out RaycastHit hit, range);
         lineOfSight.SetPosition(0, ray.origin);
-        lineOfSight.SetPosition(1, hit.point);
+        if (hit.collider)
+        {
+            lineOfSight.SetPosition(1, hit.point);
+        } else
+        {
+            lineOfSight.SetPosition(1, ray.GetPoint(range));
+        }
 
         if (Input.GetButtonDown("Portal"))
         {
@@ -88,11 +97,16 @@ public class PortalCreation : MonoBehaviour
                     }
                     else if (stage == 1)
                     {
+                        scaleText.enabled = true;
+                        scale = 1;
                         stage = 2;
                     }
                     else if (stage == 2 && outlineB.enabled)
                     {
-                        StartCoroutine(SpecialPortal());
+                        if (scale != 0)
+                        {
+                            StartCoroutine(SpecialPortal());
+                        }
                     }
                 }
                 else
@@ -128,11 +142,28 @@ public class PortalCreation : MonoBehaviour
         //    UpdateShape(ray.GetPoint(range));
         //}
 
+        //if (stage == 2 && Input.GetAxis("Scale") != 0) {
+
+        //}
+
+
         if (stage == 1 && hit.collider && hit.normal == normA)
         {
             UpdateShape(hit.point);
         } else if (stage == 2 && hit.collider)
         {
+            if (Input.GetAxis("Scale") != 0 )
+            {
+                if (scale > 0 || Input.GetAxis("Scale") > 0)
+                {
+                    scale += Input.GetAxis("Scale");
+                } else
+                {
+                    scale = 0;
+                }
+                scaleText.text = "Scale: " + scale;
+            }
+
             SetB(hit.point, hit.normal, hit.collider);
             attachedToB = hit.transform.gameObject;
             //DrawB(hit.point, hit.normal);
@@ -150,6 +181,7 @@ public class PortalCreation : MonoBehaviour
         stage = 0;
         outlineA.enabled = false;
         outlineB.enabled = false;
+        scaleText.enabled = false;
     }
     void StartA(Vector3 hit, Vector3 norm)
     {
@@ -184,8 +216,8 @@ public class PortalCreation : MonoBehaviour
 
     void SetB(Vector3 hit, Vector3 norm, Collider collider = null)
     {
-        float height = (outlineA.GetPosition(0) - outlineA.GetPosition(1)).magnitude / 2;
-        float width = (outlineA.GetPosition(1) - outlineA.GetPosition(2)).magnitude / 2;
+        float height = (outlineA.GetPosition(0) - outlineA.GetPosition(1)).magnitude / 2 * scale;
+        float width = (outlineA.GetPosition(1) - outlineA.GetPosition(2)).magnitude / 2 * scale;
 
         normB = norm;
         Vector3 midB = hit + normB * offset;
@@ -277,18 +309,31 @@ public class PortalCreation : MonoBehaviour
     }
     void CreatePortals()
     {
-        float height = (outlineA.GetPosition(0) - outlineA.GetPosition(1)).magnitude;
-        float width = (outlineA.GetPosition(1) - outlineA.GetPosition(2)).magnitude;
+        float heightA = (outlineA.GetPosition(0) - outlineA.GetPosition(1)).magnitude;
+        float widthA = (outlineA.GetPosition(1) - outlineA.GetPosition(2)).magnitude;
         Vector3 midA = (outlineA.GetPosition(0) + outlineA.GetPosition(2)) / 2;
-        Vector3 midB = (outlineB.GetPosition(0) + outlineB.GetPosition(2)) / 2;
-
-        portalA = new Portal(width, height, midA, normA, player, "a" + numPortals);
+        portalA = new Portal(widthA, heightA, midA, normA, player, "a" + numPortals);
         portalA.attachedTo = attachedToA;
-        portalB = new Portal(width, height, midB, normB, player, "b" + numPortals);
+
+        float widthB = (outlineB.GetPosition(0) - outlineB.GetPosition(1)).magnitude;
+        float heightB = (outlineB.GetPosition(1) - outlineB.GetPosition(2)).magnitude;
+        Vector3 midB = (outlineB.GetPosition(0) + outlineB.GetPosition(2)) / 2;
+        portalB = new Portal(widthB, heightB, midB, normB, player, "b" + numPortals);
         portalB.attachedTo = attachedToB;
+
         Portal.pairPortals(portalA, portalB);
         gameManager.GetComponent<GameManager>().portalList.Add(portalA);
 
         numPortals++;
+    }
+
+    // need to rewrite
+    bool NotOverlappingPortal(RaycastHit hit)
+    {
+        if (hit.collider.CompareTag("Portal"))
+        {
+            return false;
+        }
+        return true;
     }
 }
