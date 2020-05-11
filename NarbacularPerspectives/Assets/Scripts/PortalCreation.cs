@@ -148,24 +148,21 @@ public class PortalCreation : MonoBehaviour
                 {
                     if (stage == 0)
                     {
-                        stage = 1;
-                        a.norm = hit.normal;
-                        a.attachedTo = hit.transform.gameObject;
-                        StartA(a, hit.point);
+                        if (!hit.transform.gameObject.CompareTag("Portal"))
+                        {
+                            stage = 1;
+                            a.norm = hit.normal;
+                            a.attachedTo = hit.transform.gameObject;
+                            StartA(a, hit.point);
+                        }
                     }
-                    else if (stage == 1)
+                    else if (stage == 1 && a.IsValid())
                     {
                         scaleText.enabled = true;
                         scale = 1;
                         stage = 2;
-
-                        float heightA = (a.outline.GetPosition(0) - a.outline.GetPosition(1)).magnitude;
-                        float widthA = (a.outline.GetPosition(1) - a.outline.GetPosition(2)).magnitude;
-                        Vector3 midA = (a.outline.GetPosition(0) + a.outline.GetPosition(2)) / 2;
-
-                        a.Set(heightA, widthA, midA);
                     }
-                    else if (stage == 2 && outlineB.enabled)
+                    else if (stage == 2 && b.IsValid())
                     {
                         if (scale != 0)
                         {
@@ -194,14 +191,8 @@ public class PortalCreation : MonoBehaviour
         {
             if (Input.GetAxis("Scale") != 0 )
             {
-                if (scale > 0 || Input.GetAxis("Scale") > 0)
-                {
-                    scale += Input.GetAxis("Scale");
-                } else
-                {
-                    scale = 0;
-                }
-                scaleText.text = "Scale: " + scale;
+                scale = Mathf.Max(scale + Input.GetAxis("Scale"), .1f);
+                scaleText.text = "Scale: " + scale.ToString("x#.##");
             }
 
             SetB(hit.point, hit.normal, hit.collider);
@@ -252,6 +243,12 @@ public class PortalCreation : MonoBehaviour
             p.outline.SetPosition(1, new Vector3(a.x, a.y, b.z));
             p.outline.SetPosition(3, new Vector3(b.x, a.y, a.z));
         }
+
+        float height = (p.outline.GetPosition(0) - p.outline.GetPosition(1)).magnitude;
+        float width = (p.outline.GetPosition(1) - p.outline.GetPosition(2)).magnitude;
+        Vector3 mid = (p.outline.GetPosition(0) + p.outline.GetPosition(2)) / 2;
+        p.Set(height, width, mid);
+        p.Validate(p.IsValid());
     }
 
     void SetB(Vector3 hit, Vector3 n, Collider collider = null)

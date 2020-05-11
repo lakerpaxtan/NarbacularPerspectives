@@ -11,12 +11,15 @@ public class PortalOverlap : MonoBehaviour
         if (collider.gameObject.CompareTag("Portal"))
         {
             valid = false;
-        }
+        } 
     }
 
     private void OnTriggerExit(Collider collider)
     {
-        valid = true;
+        if (collider.gameObject.CompareTag("Portal"))
+        {
+            valid = true;
+        }
     }
 
     public void UpdatePlane(Vector3 mid, Vector3 norm, float width, float height)

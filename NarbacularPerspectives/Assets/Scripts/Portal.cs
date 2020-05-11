@@ -52,12 +52,14 @@ public class Portal
     private void createPortalBoundaries()
     {
         actualPlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        actualPlane.tag = "Portal";
         actualPlane.transform.position = gameObjectPos;
         actualPlane.name = name;
         actualPlane.transform.localScale = new Vector3(width, height, 1);
         actualPlane.transform.rotation = Quaternion.FromToRotation(Vector3.forward, -normalVec);
 
         borderPlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        borderPlane.tag = "Portal";
         UnityEngine.Object.Destroy(borderPlane.GetComponent<MeshCollider>());
         borderPlane.transform.position = gameObjectPos - 0.01f * normalVec;
         borderPlane.name = name + "border";
@@ -65,6 +67,7 @@ public class Portal
         borderPlane.transform.rotation = actualPlane.transform.rotation;
 
         reversePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        reversePlane.tag = "Portal";
         UnityEngine.Object.Destroy(reversePlane.GetComponent<MeshCollider>());
         reversePlane.transform.position = gameObjectPos + 0.25f *(-normalVec);
         reversePlane.name = name + "reversePlane";
