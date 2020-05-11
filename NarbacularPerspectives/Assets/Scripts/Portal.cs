@@ -66,7 +66,7 @@ public class Portal
 
         reversePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
         UnityEngine.Object.Destroy(reversePlane.GetComponent<MeshCollider>());
-        reversePlane.transform.position = gameObjectPos + 0.25f *(-normalVec);
+        reversePlane.transform.position = gameObjectPos;
         reversePlane.name = name + "reversePlane";
         reversePlane.transform.localScale = new Vector3(width, height, 1);
         reversePlane.AddComponent<MeshCollider>();
@@ -80,10 +80,11 @@ public class Portal
 
         reversePlane.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         reversePlane.GetComponent<MeshRenderer>().receiveShadows = false;
-
-        if(!attachedTo){
-            reversePlane.SetActive(false);
-        }
+        reversePlane.layer = 1;
+        
+        //borderPlane.SetActive(false);
+        //reversePlane.SetActive(false);
+        
 
         this.setupTrigger();
         portalTable.Add(actualPlane, this);
@@ -101,7 +102,9 @@ public class Portal
 
     private void createPortalCamera() {
         this.portalCam = new GameObject();
-        portalCam.AddComponent<Camera>().enabled = false;
+        Camera tempCam = portalCam.AddComponent<Camera>();
+        tempCam.enabled = false;
+        tempCam.cullingMask = tempCam.cullingMask & ~(1<<1);
         portalCam.name = name + "Cam"; 
     }
 

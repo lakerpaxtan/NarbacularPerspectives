@@ -7,15 +7,20 @@ public class Teleportable : MonoBehaviour
     public bool insidePortal = false;
     bool pastHalfway = false;
     Portal telePortal;
-    bool ignoreUpdate = false;
     GameObject copiedObject; 
     float deadzone = 0.40f;
     public bool teleported = false;
+    private GameObject capsuleObject;
+    private Material originalMat;
+    public Material shaderMat;
+
+    public GameObject playerCross;
+    public GameObject objectCross;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        
     }
 
     // Update is called once per frame
@@ -29,9 +34,16 @@ public class Teleportable : MonoBehaviour
                 teleportObject(copiedObject.transform.position +  deadzone *(telePortal.otherPortal.normalVec));
                 insidePortal = false;
                 Destroy(copiedObject);
+                removeCrossSections(); 
             } else {
                 Vector3 relativePos = telePortal.actualPlane.transform.InverseTransformPoint(this.gameObject.transform.position);
+                
+                //Needed for Local Scale Teleporting
+                Vector3 tempVec = this.telePortal.otherPortal.reversePlane.transform.localScale;
+                this.telePortal.otherPortal.reversePlane.transform.localScale = this.telePortal.actualPlane.transform.localScale;
                 this.copiedObject.transform.position  = this.telePortal.otherPortal.reversePlane.transform.TransformPoint(relativePos);
+                this.telePortal.otherPortal.reversePlane.transform.localScale = tempVec;
+                
 
                 // Rotate Clone
                 Vector3 relativeRot = telePortal.actualPlane.transform.InverseTransformDirection(this.gameObject.transform.rotation * Vector3.right);
@@ -47,22 +59,25 @@ public class Teleportable : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider other) {
-        ignoreUpdate = false;
+        
         //Not inside portal is to make sure you arent already in a portal bc they are too close together
         if (Portal.portalTable.ContainsKey(other.gameObject) && !insidePortal) {
             telePortal = Portal.portalTable[other.gameObject];
             
 
-            Debug.Log(telePortal.actualPlane.name + "enter");
-            
+            //Wall Portal specifics
             if (telePortal.attachedTo){
                 telePortal.attachedTo.GetComponent<Collider>().enabled = false;
                 telePortal.otherPortal.reversePlane.SetActive(false);
             }
+
+
             insidePortal = true;
             copiedObject = Instantiate(this.gameObject, this.gameObject.transform.position, this.gameObject.transform.rotation);
             if(copiedObject.tag == "Player"){
+                capsuleObject = this.gameObject.transform.GetChild(0).GetChild(0).gameObject;
                 telePortal.borderPlane.SetActive(false);
+                telePortal.reversePlane.SetActive(false);
                 Destroy(copiedObject.GetComponent<FirstPersonController>());
                 Destroy(copiedObject.GetComponent<AudioSource>());
                 copiedObject.GetComponent<Rigidbody>().isKinematic = true;
@@ -74,7 +89,8 @@ public class Teleportable : MonoBehaviour
                 Destroy(copiedObject.GetComponent<FirstPersonAIO>());
                 Destroy(copiedObject.GetComponent<Teleportable>());
                 Destroy(copiedObject.GetComponent<CapsuleCollider>());
-                Destroy(copiedObject.transform.GetChild(0).GetChild(0).GetComponentInChildren<PortalCreation>());            
+                Destroy(copiedObject.transform.GetChild(0).GetChild(0).GetComponentInChildren<PortalCreation>());
+                setupCrossSections();            
             } 
             else if (copiedObject.tag == "Bullet") {
                 Destroy(copiedObject.GetComponent<CapsuleCollider>());
@@ -90,9 +106,9 @@ public class Teleportable : MonoBehaviour
             return;
         }
         //Resetting the reversePlane
-        if(!telePortal.attachedTo){
-            telePortal.reversePlane.SetActive(true);
-        }
+       
+        telePortal.reversePlane.SetActive(true);
+        
         //Resetting the borderPlane
         telePortal.borderPlane.SetActive(true);
 
@@ -117,6 +133,10 @@ public class Teleportable : MonoBehaviour
 
         insidePortal = false;
         Destroy(copiedObject);
+        Debug.Log(this.gameObject.tag);
+        if(this.gameObject.tag == "Player"){
+            removeCrossSections(); 
+        }
         //Reset Collider if leaving
         if (telePortal.attachedTo) {
             Debug.Log("blah");
@@ -152,5 +172,53 @@ public class Teleportable : MonoBehaviour
             tempRB.velocity = this.gameObject.transform.TransformDirection(tempVelocityMag);
             this.gameObject.transform.localScale = this.gameObject.transform.localScale * telePortal.scaleFactor;
         }
+    }
+
+
+    private void setupCrossSections(){
+        
+        OnePlaneCuttingController playerController = capsuleObject.AddComponent<OnePlaneCuttingController>();
+        OnePlaneCuttingController objectController = copiedObject.transform.GetChild(0).GetChild(0).gameObject.AddComponent<OnePlaneCuttingController>();
+
+        MeshRenderer capsuleMesh = capsuleObject.GetComponent<MeshRenderer>();
+        originalMat = capsuleMesh.material;
+        capsuleMesh.material = shaderMat;
+
+        GameObject tempGun = capsuleObject.transform.GetChild(0).gameObject;
+        foreach (Transform child in tempGun.transform){
+            child.GetComponent<MeshRenderer>().material = capsuleMesh.material;
+        }
+
+        playerCross.transform.position = telePortal.reversePlane.transform.position;
+        playerCross.transform.rotation = telePortal.reversePlane.transform.rotation;
+
+        playerController.plane = playerCross;
+
+        objectCross.transform.position = telePortal.otherPortal.reversePlane.transform.position;
+        objectCross.transform.rotation = telePortal.otherPortal.reversePlane.transform.rotation;
+
+        objectController.plane = objectCross;
+
+        GameObject copiedCapsule = copiedObject.transform.GetChild(0).GetChild(0).gameObject;
+        copiedCapsule.GetComponent<MeshRenderer>().material = shaderMat;
+        tempGun = copiedCapsule.transform.GetChild(0).gameObject;
+        foreach (Transform child in tempGun.transform){
+            child.GetComponent<MeshRenderer>().material = copiedCapsule.GetComponent<MeshRenderer>().material;
+        }
+    }
+
+    private void removeCrossSections(){
+
+        MeshRenderer capsuleMesh = capsuleObject.GetComponent<MeshRenderer>();
+        capsuleMesh.material = originalMat;
+
+        
+        foreach (Transform child in capsuleObject.transform.GetChild(0).transform){
+            child.GetComponent<MeshRenderer>().material = capsuleMesh.material;
+        }
+
+
+        Destroy(capsuleObject.GetComponent<OnePlaneCuttingController>());
+
     }
 }
