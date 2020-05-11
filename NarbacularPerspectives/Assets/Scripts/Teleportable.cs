@@ -101,6 +101,7 @@ public class Teleportable : MonoBehaviour
 
     private void OnTriggerExit(Collider other){
         //Case where you enter another portal's trigger before exiting the original because they are back to back (too close together)
+        Debug.Log(this.gameObject.name);
         if(telePortal.actualPlane != other.gameObject){
             Debug.Log("WOAH DUDE");
             return;
