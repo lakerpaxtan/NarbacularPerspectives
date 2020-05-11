@@ -6,15 +6,15 @@ public class PortalOverlap : MonoBehaviour
 {
     public bool valid = true;
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collider)
     {
-        if (collision.gameObject.CompareTag("Portal"))
+        if (collider.gameObject.CompareTag("Portal"))
         {
             valid = false;
         }
     }
 
-    private void OnCollisionExit(Collision collision)
+    private void OnTriggerExit(Collider collider)
     {
         valid = true;
     }

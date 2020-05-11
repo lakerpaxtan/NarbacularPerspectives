@@ -231,9 +231,10 @@ GameObject:
   - component: {fileID: 436731875}
   - component: {fileID: 436731876}
   - component: {fileID: 436731877}
-  m_Layer: 0
+  - component: {fileID: 436731878}
+  m_Layer: 2
   m_Name: TestOverlapA
-  m_TagString: Untagged
+  m_TagString: Portal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -263,7 +264,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 1, z: 0.1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &436731877
 MonoBehaviour:
@@ -278,6 +279,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   valid: 1
+--- !u!54 &436731878
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 436731874}
+  serializedVersion: 2
+  m_Mass: 0.0000001
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &561728941
 GameObject:
   m_ObjectHideFlags: 0
@@ -1324,9 +1341,10 @@ GameObject:
   - component: {fileID: 1464736976}
   - component: {fileID: 1464736977}
   - component: {fileID: 1464736978}
-  m_Layer: 0
+  - component: {fileID: 1464736979}
+  m_Layer: 2
   m_Name: TestOverlapB
-  m_TagString: Untagged
+  m_TagString: Portal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1356,7 +1374,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 1, z: 0.1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1464736978
 MonoBehaviour:
@@ -1371,6 +1389,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   valid: 1
+--- !u!54 &1464736979
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1464736975}
+  serializedVersion: 2
+  m_Mass: 0.0000001
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1520082649
 GameObject:
   m_ObjectHideFlags: 0

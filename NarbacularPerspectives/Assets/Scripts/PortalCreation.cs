@@ -51,6 +51,7 @@ public class PortalCreation : MonoBehaviour
         {
             outline = x;
             c = collider;
+            c.SetActive(false);
         }
 
         public void Set(float height, float width, Vector3 m)
@@ -58,6 +59,9 @@ public class PortalCreation : MonoBehaviour
             h = height;
             w = width;
             mid = m;
+
+            c.SetActive(true);
+            c.GetComponent<PortalOverlap>().UpdatePlane(mid, norm, w, h);
         }
 
         // Check that portal is on the same surface
@@ -80,7 +84,7 @@ public class PortalCreation : MonoBehaviour
 
         bool NotOverlapping()
         {
-            return true;
+            return c.GetComponent<PortalOverlap>().valid;
         }
 
         public void Validate(bool valid)
@@ -254,8 +258,6 @@ public class PortalCreation : MonoBehaviour
     {
         b.norm = n;
         b.Set(a.h * scale, a.w * scale, hit + b.norm * offset);
-        b.h = a.h * scale;
-        b.w = a.w * scale;
 
         float height = b.h / 2;
         float width = b.w / 2;
