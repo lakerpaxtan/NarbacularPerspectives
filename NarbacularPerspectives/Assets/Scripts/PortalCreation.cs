@@ -9,8 +9,6 @@ public class PortalCreation : MonoBehaviour
     float timer;
     public float doubleClickDelay = .2f;
 
-    public Material borderMat;
-
     // ui kinda
     int stage = 0; // 0: no portals created / 1: portal a being created / 2: portal a created, portal b ready to place
     public float range = 20f;
@@ -26,13 +24,14 @@ public class PortalCreation : MonoBehaviour
     Outline a;
     Outline b;
 
-
-    public GameObject prefPortal;
     public LineRenderer outlineA;
     public LineRenderer outlineB;
     public GameObject player;
     public GameObject gameManager;
     float numPortals;
+
+    public Material borderMat;
+    public GameObject prefPortal;
 
     float scale;
     public Text scaleText;
@@ -42,30 +41,25 @@ public class PortalCreation : MonoBehaviour
     class Outline
     {
         public LineRenderer outline;
-        //public bool set;
         public Vector3 norm;
         public Vector3 mid;
         public float w;
         public float h;
         public GameObject attachedTo;
-
-        GameObject c;
+        readonly GameObject c;
 
         public Outline(LineRenderer x, GameObject collider)
         {
-            outline = x;
-            c = collider;
-            c.SetActive(false);
+            this.outline = x;
+            this.c = collider;
+            this.c.SetActive(false);
         }
 
         public void Set(float height, float width, Vector3 m)
         {
-            h = height;
-            w = width;
-            mid = m;
-
-            c.SetActive(true);
-            c.GetComponent<PortalOverlap>().UpdatePlane(mid, norm, w, h);
+            this.h = height;
+            this.w = width;
+            this.mid = m;
         }
 
         // Check that portal is on the same surface
@@ -79,35 +73,44 @@ public class PortalCreation : MonoBehaviour
                 Physics.Raycast(ray, out RaycastHit hit);
                 if (hit.collider != x.collider)
                 {
+                    Validate(false);
                     return false;
                 }
             }
-
-            return NotOverlapping();
+            bool v = NotOverlapping();
+            Validate(v);
+            return v;
         }
 
         bool NotOverlapping()
         {
+            this.c.SetActive(true);
+            this.c.GetComponent<PortalOverlap>().UpdatePlane(mid, norm, w, h);
             return c.GetComponent<PortalOverlap>().valid;
         }
 
         public void Validate(bool valid)
         {
-            outline.enabled = valid;
+            if (valid)
+            {
+                this.outline.startColor = this.outline.endColor = Color.white;
+            }
+            else
+            {
+                this.outline.startColor = this.outline.endColor = Color.red;
+            }
         }
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        stage = 0;
         lineOfSight = gameObject.transform.GetComponentInChildren<LineRenderer>();
-        outlineA.enabled = false;
-        outlineB.enabled = false;
         numPortals = 0;
 
         a = new Outline(outlineA, planeA);
         b = new Outline(outlineB, planeB);
+        Reset();
 
         text.text = "right click to create portal";
         StartCoroutine(Instruct());
@@ -128,29 +131,32 @@ public class PortalCreation : MonoBehaviour
         Ray ray = new Ray(transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction);
         Physics.Raycast(ray, out RaycastHit hit, range);
         lineOfSight.SetPosition(0, ray.origin);
+
+        // Ray hits collider, begin creating portals
         if (hit.collider)
         {
             lineOfSight.SetPosition(1, hit.point);
-        } else
+        }
+        else
         {
             lineOfSight.SetPosition(1, ray.GetPoint(range));
         }
 
         if (Input.GetButtonDown("Portal"))
         {
-            if (one_click) // double click
+            if (one_click) // double click -- cancel portal
             {
                 one_click = false;
                 Reset();
             }
-            else // first click
+            else // first click -- create portals
             {
                 one_click = true;
                 timer = Time.time;
 
                 if (hit.collider)
                 {
-                    if (stage == 0)
+                    if (stage == 0) // Start off A
                     {
                         if (!hit.transform.gameObject.CompareTag("Portal"))
                         {
@@ -160,168 +166,163 @@ public class PortalCreation : MonoBehaviour
                             StartA(a, hit.point);
                         }
                     }
-                    else if (stage == 1 && a.IsValid())
+                    else if (stage == 1 && a.IsValid()) // Set Outline A, start off B
                     {
                         scaleText.enabled = true;
-                        scale = 1;
                         stage = 2;
+                        b.outline.enabled = true;
                     }
-                    else if (stage == 2 && b.IsValid())
+                    else if (stage == 2 && b.IsValid()) // Set Outline B, create portals
                     {
-                        if (scale != 0)
-                        {
-                            StartCoroutine(SpecialPortal());
-                        }
+                        StartCoroutine(SpecialPortal());
                     }
                 }
-                else
+                //else
+                //{
+                //    Reset();
+                //}
+
+            }
+        }
+
+        if (hit.collider && !hit.collider.CompareTag("Portal"))
+        {
+            if (stage == 1 && hit.collider == a.attachedTo.GetComponent<Collider>()
+                && hit.normal == a.norm)
+            {
+                UpdateA(hit.point);
+            }
+            else if (stage == 2)
+            {
+                if (Input.GetAxis("Scale") != 0)
                 {
-                    Reset();
+                    scale = Mathf.Max(scale + Input.GetAxis("Scale"), .1f);
+                    scaleText.text = "Scale: " + scale.ToString("x#.##");
                 }
 
+                //SetB(hit.point, hit.normal, hit.collider);
+                b.attachedTo = hit.transform.gameObject;
+                UpdateB(hit.point, hit.normal);
             }
         }
 
-        //if (stage == 1)
-        //{
-        //    UpdateShape(ray.GetPoint(range));
-        //}
-
-        if (stage == 1 && hit.collider && hit.collider == a.attachedTo.GetComponent<Collider>() 
-            && hit.normal == a.norm)
-        {
-            UpdateA(a, hit.point);
-        } else if (stage == 2 && hit.collider)
-        {
-            if (Input.GetAxis("Scale") != 0 )
-            {
-                scale = Mathf.Max(scale + Input.GetAxis("Scale"), .1f);
-                scaleText.text = "Scale: " + scale.ToString("x#.##");
-            }
-
-            SetB(hit.point, hit.normal, hit.collider);
-            b.attachedTo = hit.transform.gameObject;
-            //DrawB(hit.point, hit.normal);
-        }
-
-        // reset double click
+        // reset double click timer
         if (one_click && Time.time - timer > doubleClickDelay)
         {
             one_click = false;
         }
     }
 
+    /// <summary>
+    /// This resets creating any portals.
+    /// </summary>
     void Reset()
     {
         stage = 0;
+        scale = 1;
         a.outline.enabled = false;
-        outlineB.enabled = false;
+        b.outline.enabled = false;
         scaleText.enabled = false;
     }
+
+    /// <summary>
+    /// This method kicks off A's outline.
+    /// </summary>
     void StartA(Outline a, Vector3 hit)
     {
         a.outline.enabled = true;
-        a.outline.SetPosition(0, new Vector3(hit.x, hit.y, hit.z) + a.norm * offset);
+        a.outline.SetPosition(0, hit + a.norm * offset);
         stage = 1;
     }
 
-    void UpdateA(Outline p, Vector3 hit)
+    /// <summary>
+    /// Update A's outline according to hitpoint, a corner point.
+    /// </summary>
+    void UpdateA(Vector3 hitPoint)
     {
-        Vector3 b = hit + p.norm * offset;
-        p.outline.SetPosition(2, b);
+        Vector3 u = a.outline.GetPosition(0);
+        Vector3 v = hitPoint + a.norm * offset;
+        a.outline.SetPosition(2, v);
 
-        Vector3 a = p.outline.GetPosition(0);
+        Vector3 mid = (u + v) / 2;
+        Vector3 orth1 = a.mid;
+        Vector3 orth2 = a.mid;
 
-        if (Mathf.Abs(p.norm.z) > .5)
-        {
-            p.outline.SetPosition(1, new Vector3(a.x, hit.y, a.z));
-            p.outline.SetPosition(3, new Vector3(hit.x, a.y, a.z));
-        }
-        else if (Mathf.Abs(p.norm.x) > .5)
-        {
-            p.outline.SetPosition(1, new Vector3(a.x, a.y, b.z));
-            p.outline.SetPosition(3, new Vector3(a.x, b.y, a.z));
-        }
-        else if (Mathf.Abs(p.norm.y) > .5)
-        {
-            p.outline.SetPosition(1, new Vector3(a.x, a.y, b.z));
-            p.outline.SetPosition(3, new Vector3(b.x, a.y, a.z));
-        }
+        Vector3 ground = new Vector3(0, 0, 0);
+        Vector3.OrthoNormalize(ref a.norm, ref ground, ref orth1);
+        Vector3.OrthoNormalize(ref a.norm, ref ground, ref orth2);
+        Vector3.OrthoNormalize(ref a.norm, ref orth1, ref orth2);
 
-        float height = (p.outline.GetPosition(0) - p.outline.GetPosition(1)).magnitude;
-        float width = (p.outline.GetPosition(1) - p.outline.GetPosition(2)).magnitude;
-        Vector3 mid = (p.outline.GetPosition(0) + p.outline.GetPosition(2)) / 2;
-        p.Set(height, width, mid);
-        p.Validate(p.IsValid());
+        LineIntersection(out Vector3 j, u, v, orth1, orth2);
+        LineIntersection(out Vector3 i, u, v, orth2, orth1);
+
+        a.outline.SetPosition(1, i);
+        a.outline.SetPosition(3, j);
+
+        float height = Vector3.Distance(u, i);
+        float width = Vector3.Distance(u, j);
+
+        a.Set(height, width, mid);
+        a.IsValid();
     }
 
-    void SetB(Vector3 hit, Vector3 n, Collider collider = null)
+
+    /// <summary>
+    /// Given a point p0 and its line line0, return if there exists 
+    /// an intersection with point p2 and line2.
+    /// </summary>
+    bool LineIntersection(out Vector3 intersection, Vector3 p0, Vector3 p2, Vector3 line0, Vector3 line2)
+    {
+        Vector3 line3 = p2 - p0;
+        Vector3 cross1and2 = Vector3.Cross(line0, line2);
+        Vector3 cross3and2 = Vector3.Cross(line3, line2);
+
+        float planarFactor = Vector3.Dot(line3, cross1and2);
+
+        if (Mathf.Abs(planarFactor) < 0.0001f && cross1and2.sqrMagnitude > 0.0001f)
+        {
+            float s = Vector3.Dot(cross3and2, cross1and2) / cross1and2.sqrMagnitude;
+            intersection = p0 + line0 * s;
+            return true;
+        }
+        intersection = Vector3.zero;
+        return false;
+    }
+
+    /// <summary>
+    /// Update B's outline according to hitpoint, a mid point.
+    /// </summary>
+    void UpdateB(Vector3 hitPoint, Vector3 n)
     {
         b.norm = n;
-        b.Set(a.h * scale, a.w * scale, hit + b.norm * offset);
+        b.Set(a.h * scale, a.w * scale, hitPoint + b.norm * offset);
+        Vector3 orth1 = b.mid;
+        Vector3 orth2 = b.mid;
+        Vector3 ground = new Vector3(0, 0, 0);
+        Vector3.OrthoNormalize(ref b.norm, ref ground, ref orth1);
+        Vector3.OrthoNormalize(ref b.norm, ref ground, ref orth2);
+        Vector3.OrthoNormalize(ref b.norm, ref orth1, ref orth2);
 
-        float height = b.h / 2;
         float width = b.w / 2;
+        float height = b.h / 2;
 
-        if (Mathf.Abs(b.norm.z) > .5)
-        {
-            b.outline.SetPosition(0, new Vector3(b.mid.x - width, b.mid.y + height, b.mid.z));
-            b.outline.SetPosition(1, new Vector3(b.mid.x + width, b.mid.y + height, b.mid.z));
-            b.outline.SetPosition(2, new Vector3(b.mid.x + width, b.mid.y - height, b.mid.z));
-            b.outline.SetPosition(3, new Vector3(b.mid.x - width, b.mid.y - height, b.mid.z));
-        }
-        else if (Mathf.Abs(b.norm.x) > .5)
-        {
-            b.outline.SetPosition(0, new Vector3(b.mid.x, b.mid.y - width, b.mid.z + height));
-            b.outline.SetPosition(1, new Vector3(b.mid.x, b.mid.y + width, b.mid.z + height));
-            b.outline.SetPosition(2, new Vector3(b.mid.x, b.mid.y + width, b.mid.z - height));
-            b.outline.SetPosition(3, new Vector3(b.mid.x, b.mid.y - width, b.mid.z - height));
-        }
-        else if (Mathf.Abs(b.norm.y) > .5)
-        {
-            b.outline.SetPosition(0, new Vector3(b.mid.x - width, b.mid.y, b.mid.z + height));
-            b.outline.SetPosition(1, new Vector3(b.mid.x + width, b.mid.y, b.mid.z + height));
-            b.outline.SetPosition(2, new Vector3(b.mid.x + width, b.mid.y, b.mid.z - height));
-            b.outline.SetPosition(3, new Vector3(b.mid.x - width, b.mid.y, b.mid.z - height));
-        }
+        b.outline.SetPosition(0, b.mid - orth1 * width + orth2 * height);
+        b.outline.SetPosition(1, b.mid + orth1 * width + orth2 * height);
+        b.outline.SetPosition(2, b.mid + orth1 * width - orth2 * height);
+        b.outline.SetPosition(3, b.mid - orth1 * width - orth2 * height);
 
-        if (collider)
-        {
-            b.Validate(b.IsValid());
-        }
+        b.IsValid();
     }
 
-    // Sets B at any rotation/norm BUT won't be consistent parallel with ground...pros/cons?
-    void DrawB(Vector3 hitPoint, Vector3 norm)
-    {
-        Vector3 midB = hitPoint + norm * offset;
-        b.norm = norm;
-        outlineB.enabled = true;
-
-        float height = (outlineA.GetPosition(0) - outlineA.GetPosition(1)).magnitude / 2;
-        float width = (outlineA.GetPosition(1) - outlineA.GetPosition(2)).magnitude / 2;
-
-        Vector3 orth1 = midB;
-        Vector3 orth2 = midB;
-
-        Vector3.OrthoNormalize(ref norm, ref orth1, ref orth2);
-
-        //Ray a = new Ray(midB, orth1);
-        //Ray b = new Ray(midB, orth2);
-
-        outlineB.SetPosition(0, midB - orth1 * width + orth2 * height);
-        outlineB.SetPosition(1, midB + orth1 * width + orth2 * height);
-        outlineB.SetPosition(2, midB + orth1 * width - orth2 * height);
-        outlineB.SetPosition(3, midB - orth1 * width - orth2 * height);
-    }
-
-    // IEnumerator in case player resets portal instead of instantiates one
+    /// <summary>
+    /// Kick off portal creation. Add special effects here.
+    /// </summary>
     IEnumerator SpecialPortal()
     {
-        yield return new WaitForSeconds(doubleClickDelay);
-
         if (stage == 2)
         {
+            stage = 3;
+            yield return new WaitForSeconds(doubleClickDelay);
             CreatePortals(a, b);
             Reset();
         }
@@ -331,6 +332,7 @@ public class PortalCreation : MonoBehaviour
         Portal portalA = new Portal(a.w, a.h, a.mid, a.norm, player, "a" + numPortals, prefPortal, borderMat);
         portalA.attachedTo = a.attachedTo;
 
+
         Portal portalB = new Portal(b.w, b.h, b.mid, b.norm, player, "b" + numPortals, prefPortal, borderMat);
         portalB.attachedTo = b.attachedTo;
 
@@ -338,10 +340,5 @@ public class PortalCreation : MonoBehaviour
         gameManager.GetComponent<GameManager>().portalList.Add(portalA);
 
         numPortals++;
-    }
-
-    bool CheckOverlap(Outline b)
-    {
-        return true;
     }
 }

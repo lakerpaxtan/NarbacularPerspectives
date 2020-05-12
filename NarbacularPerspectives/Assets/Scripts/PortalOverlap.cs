@@ -6,11 +6,29 @@ public class PortalOverlap : MonoBehaviour
 {
     public bool valid = true;
 
+    public List<GameObject> overlap;
+
+    void Start()
+    {
+        overlap = new List<GameObject>();
+    }
+
+        private void Update()
+    {
+        if (overlap.Count == 0)
+        {
+            valid = true;
+        } else
+        {
+            valid = false;
+        }
+    }
+
     private void OnTriggerEnter(Collider collider)
     {
         if (collider.gameObject.CompareTag("Portal"))
         {
-            valid = false;
+            overlap.Add(collider.gameObject);
         } 
     }
 
@@ -18,7 +36,7 @@ public class PortalOverlap : MonoBehaviour
     {
         if (collider.gameObject.CompareTag("Portal"))
         {
-            valid = true;
+            overlap.Remove(collider.gameObject);
         }
     }
 

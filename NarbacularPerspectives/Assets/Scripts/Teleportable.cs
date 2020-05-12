@@ -17,7 +17,7 @@ public class Teleportable : MonoBehaviour
     private Material originalMat;
     public Material shaderMat;
 
-    
+ 
 
     public GameObject playerCross;
     public GameObject objectCross;

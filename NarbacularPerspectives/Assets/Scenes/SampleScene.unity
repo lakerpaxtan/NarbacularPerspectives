@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -279,6 +279,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   valid: 1
+  overlap: []
 --- !u!54 &436731878
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -294,7 +295,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3
 --- !u!1 &561728941
 GameObject:
   m_ObjectHideFlags: 0
@@ -340,18 +341,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   doubleClickDelay: 0.2
-  borderMat: {fileID: 2100000, guid: c733c2f333a89dd4e88a27099b61571d, type: 2}
   range: 50
   lineOfSight: {fileID: 0}
   offset: 0.04
   planeA: {fileID: 436731874}
   planeB: {fileID: 1464736975}
-  prefPortal: {fileID: 4816202756639905600, guid: 3020a7a381622c442a1b4cd8994e2535,
-    type: 3}
   outlineA: {fileID: 1760325943}
   outlineB: {fileID: 1399703414}
   player: {fileID: 8750997}
   gameManager: {fileID: 1254872011}
+  borderMat: {fileID: 2100000, guid: c733c2f333a89dd4e88a27099b61571d, type: 2}
+  prefPortal: {fileID: 4816202756639905600, guid: 3020a7a381622c442a1b4cd8994e2535,
+    type: 3}
   scaleText: {fileID: 1878177886}
   text: {fileID: 1160215783}
   readTime: 3
@@ -1300,7 +1301,7 @@ LineRenderer:
       atime5: 0
       atime6: 0
       atime7: 0
-      m_Mode: 0
+      m_Mode: 1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     numCornerVertices: 0
@@ -1654,6 +1655,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   valid: 1
+  overlap: []
 --- !u!54 &1464736979
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1669,7 +1671,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3
 --- !u!1 &1520082649
 GameObject:
   m_ObjectHideFlags: 0
@@ -2082,7 +2084,7 @@ LineRenderer:
       atime5: 0
       atime6: 0
       atime7: 0
-      m_Mode: 0
+      m_Mode: 1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     numCornerVertices: 0
