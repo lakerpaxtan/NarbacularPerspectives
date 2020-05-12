@@ -151,24 +151,29 @@ public class PortalCreation : MonoBehaviour
                             a.attachedTo = hit.transform.gameObject;
                             StartA(hit.point);
                         }
-                    } else
+                    } 
+                    //else
+                    //{
+                    //    stage = 1;
+                    //    a.norm = hit.normal;
+                    //    a.attachedTo = null;
+                    //    StartA(ray.GetPoint(range));
+                    //}
+                }
+                if (hit.collider)
+                {
+                    if (stage == 1 && a.IsValid()) // Set Outline A, start off B
                     {
-                        stage = 1;
-                        a.norm = hit.normal;
-                        a.attachedTo = null;
-                        StartA(ray.GetPoint(range));
+                        scaleText.enabled = true;
+                        stage = 2;
+                        b.outline.enabled = true;
+                    }
+                    else if (stage == 2 && b.IsValid()) // Set Outline B, create portals
+                    {
+                        StartCoroutine(SpecialPortal());
                     }
                 }
-                else if (stage == 1 && a.IsValid()) // Set Outline A, start off B
-                {
-                    scaleText.enabled = true;
-                    stage = 2;
-                    b.outline.enabled = true;
-                }
-                else if (stage == 2 && b.IsValid()) // Set Outline B, create portals
-                {
-                    StartCoroutine(SpecialPortal());
-                }
+
             }
         }
 
@@ -181,12 +186,13 @@ public class PortalCreation : MonoBehaviour
                 {
                     UpdateA(hit.point);
                 }
-            } else if (!a.attachedTo)
-            {
-                //Vector3 point = ProjectPointOnPlane(-transform.TransformDirection(Vector3.forward), a.outline.GetPosition(0), ray.GetPoint(range));
-                //Debug.DrawLine(a.outline.GetPosition(0), point, color: Color.black);
-                UpdateA(ray.GetPoint(range));
-            }
+            } 
+            //else if (!a.attachedTo)
+            //{
+            //    //Vector3 point = ProjectPointOnPlane(-transform.TransformDirection(Vector3.forward), a.outline.GetPosition(0), ray.GetPoint(range));
+            //    //Debug.DrawLine(a.outline.GetPosition(0), point, color: Color.black);
+            //    UpdateA(ray.GetPoint(range));
+            //}
         }
 
         if (hit.collider && !hit.collider.CompareTag("Portal"))
@@ -244,24 +250,30 @@ public class PortalCreation : MonoBehaviour
         Vector3 mid = (u + v) / 2;
         Vector3 orth1 = a.mid; // width
         Vector3 orth2 = a.mid; // height
-
+        // me trying dumb shit ugh
         Vector3 ground = new Vector3(0, 0, 0);
+        //Ray g = new Ray(mid, ground);
+        //Ray no = new Ray(mid, a.norm);
+        //Debug.DrawLine(mid, no.GetPoint(10));
+
         Vector3.OrthoNormalize(ref a.norm, ref ground, ref orth1);
         Vector3.OrthoNormalize(ref a.norm, ref ground, ref orth2);
         Vector3.OrthoNormalize(ref a.norm, ref orth1, ref orth2);
 
+        //Debug.DrawLine(mid, g.GetPoint(10));
+        //// get the j point
         LineIntersection(out Vector3 j, u, orth1, v, orth2);
         LineIntersection(out Vector3 i, u, orth2, v, orth1);
 
-        Ray m = new Ray(v, orth1);
-        Ray n = new Ray(v, orth2);
-        Debug.DrawLine(v, m.GetPoint(10), color: Color.blue);
-        Debug.DrawLine(v, n.GetPoint(10), color: Color.red);
+        //Ray m = new Ray(v, orth1);
+        //Ray n = new Ray(v, orth2);
+        //Debug.DrawLine(v, m.GetPoint(10), color: Color.blue);
+        //Debug.DrawLine(v, n.GetPoint(10), color: Color.red);
 
-        Ray q = new Ray(u, orth1);
-        Ray r = new Ray(u, orth2);
-        Debug.DrawLine(u, q.GetPoint(10), color: Color.blue);
-        Debug.DrawLine(u, r.GetPoint(10), color: Color.red);
+        //Ray q = new Ray(u, orth1);
+        //Ray r = new Ray(u, orth2);
+        //Debug.DrawLine(u, q.GetPoint(10), color: Color.blue);
+        //Debug.DrawLine(u, r.GetPoint(10), color: Color.red);
 
         a.outline.SetPosition(1, i);
         a.outline.SetPosition(3, j);

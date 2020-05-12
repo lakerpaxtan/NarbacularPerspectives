@@ -341,7 +341,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   doubleClickDelay: 0.4
-  range: 5
+  range: 20
   lineOfSight: {fileID: 1520082651}
   offset: 0.04
   planeA: {fileID: 436731874}
