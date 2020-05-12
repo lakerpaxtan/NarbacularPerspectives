@@ -9,9 +9,9 @@ public class Teleportable : MonoBehaviour
     Portal telePortal;
     GameObject copiedObject; 
     //Gives more leeway on camera obstruction when teleporting
-    float deadzone2 = 0.20f;
+    float deadzone2 = 0.10f;
     //Gives more leeway on strafing 
-    float deadzone = 0.40f;
+    float deadzone = 0.20f;
     public bool teleported = false;
     private GameObject capsuleObject;
     private Material originalMat;
@@ -37,9 +37,8 @@ public class Teleportable : MonoBehaviour
             if (pastHalfway && gameObject.tag == "Player") {
                 teleported = true;
                 telePortal.otherPortal.reversePlane.SetActive(false);
-                Debug.Log(copiedObject.transform.position + "before tp and math");
-                Debug.Log(copiedObject.transform.position +  deadzone *(copiedObject.transform.forward));
-                teleportObject(copiedObject.transform.position +  deadzone *(copiedObject.transform.forward));
+               
+                teleportObject(copiedObject.transform.position +  deadzone *(telePortal.otherPortal.normalVec));
                 insidePortal = false;
                 Destroy(copiedObject);
                 removeCrossSections(); 

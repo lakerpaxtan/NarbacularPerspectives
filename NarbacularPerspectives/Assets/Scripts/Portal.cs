@@ -189,12 +189,7 @@ public class Portal
         float dist = -(Vector3.Dot(normalVec, actualPlane.transform.position));
         Vector4 obliquePlane = new Vector4(reversePlane.transform.forward.x, reversePlane.transform.forward.y, reversePlane.transform.forward.z, dist);
         Vector4 cameraSpaceObliquePlane = Matrix4x4.Transpose(Matrix4x4.Inverse(otherPortal.portalCam.GetComponent<Camera>().worldToCameraMatrix)) * obliquePlane;
-        
         otherPortal.portalCam.GetComponent<Camera>().projectionMatrix = playerObject.transform.GetComponent<Camera>().CalculateObliqueMatrix(cameraSpaceObliquePlane);
-        if(actualPlane.name == "testFive" || actualPlane.name == "testSix"){
-            //Debug.Log(actualPlane.name + " dist " + dist + " plane " + obliquePlane + " cameraspace " + cameraSpaceObliquePlane);
-            //Debug.Log(otherPortal.portalCam.GetComponent<Camera>().projectionMatrix);
-        }
     }
 
     private void updateCameraTexture() {
