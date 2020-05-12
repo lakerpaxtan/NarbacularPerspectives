@@ -13,8 +13,11 @@ public class PortalOverlap : MonoBehaviour
         overlap = new List<GameObject>();
     }
 
-        private void Update()
+    private void Update()
     {
+        if (overlap.Count == 1 && overlap[0].activeSelf) {
+            overlap.RemoveAt(0);
+        }
         if (overlap.Count == 0)
         {
             valid = true;

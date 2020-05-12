@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <style>
@@ -23,233 +23,139 @@
 
 <body>
 
-<h1 align="middle">CS 184: Computer Graphics and Imaging</h1>
-<h1 align="middle">Narbacular Perspective(s) [Proposal]</h1>
-<h2 align="middle">Paxtan Laker, Austin Davis, Emily Nguyen</h2>
+    <h1 align="middle">CS 184: Computer Graphics and Imaging</h1>
+    <h1 align="middle">Narbacular Perspective(s) [Final Report]</h1>
+    <h2 align="middle">Paxtan Laker, Austin Davis, Emily Nguyen</h2>
 
-<br><br>
+    <br /><br />
     <div align="middle">
-  <table style="width=100%">
-    <tr>
-      <td>
-        <img src="images/cutePortal.jpg" align="middle" width="400px"/>
-      </td>
-    </tr>
-    <br>
-    
-  </table>
-</div>
-<br><br>
+        <table style="width=100%">
+            <tr>
+                <td>
+                    <img src="images/cutePortal.jpg" align="middle" width="400px" />
+                </td>
+            </tr>
+            <br />
 
-<h2 align="left">Overview</h2>
-<p style="font-size:13px">
+        </table>
+    </div>
+    <br /><br />
 
-Imagine Valve’s Portal, but users are allowed to create portals of different sizes? What do you think would happen when you stepped through the larger portal and exited the smaller portal? <br><br>
+    <br />
+    <a href="milestone.html" align="center">Milestone Report</a>
+    <a href="proposal.html" align="center">Proposal</a>
 
-We are striving to make a VR demo that answers this question by creating a system in Unity to allow users to create portals of varying sizes that will scale the size of objects passed through them (relative to the ratios of their area). We imagine that this system can create unique puzzle-like scenarios where users have to use portals for teleportation and perspective shifts simultaneously. We also find the implementation implications incredibly intriguing from a computer graphics perspective and want to put our Unity / CS 184 skills to the test. <br><br>
 
+    <h2 align="left">Abstract</h2>
+    <p>
+        A paragraph summary of the entire project.
+    </p>
+
+
+    <hr />
+
+    <h2 align="left">Background</h2>
+    <p>
+        Some background here.
+    </p>
+
+
+    <hr />
+    <h2 align="left">Technical Approach</h2>
+    <p>
+        -A 1-2 page summary of your technical approach, techniques used, algorithms implemented, etc. (use references to papers or other resources for further detail). Highlight how your approach varied from the references used (did you implement a subset, or did you change or enhance anything), the unique decisions you made and why.
+        <br />
+        -A description of problems encountered and how you tackled them.
+        <br />
+        -A description of lessons learned.
+    </p>
+
+    <h3 align="left">1. First Person Character, Gun, Scene and Game Management</h3>
+    <p> Insert text here.</p>
+
+    <h3 align="left">2. Portal Pairing, Portal Rendering, Camera Movement</h3>
+    <p> Insert text here. Break down into whichever steps!</p>
+
+    <h3 align="left">3. Teleportation</h3>
+    <p> Insert text here. Break down into whichever steps! Include scaling.</p>
+
+    <h3 align="left">4. Portal Creation</h3>
+    <p> Insert text here.</p>
+
+    <hr />
+
+    <h2 align="left">Results</h2>
+    <p>
+        Your final images, animations, video of your system (whichever is relevant). You can include results that you think show off what you built but that you did not have time to go over on presentation day.
 
     </p>
-    
-    
 
+    <hr />
 
-<hr>
-    
-    
-    
-    
-<h2 align="left">Problem Description(s)</h2>
-    
-    
-    
+    <h2 align="left">References</h2>
 
-    
+    <ul>
+        <li>
+            https://en.wikipedia.org/wiki/Portal_(video_game)
+        </li>
+        <br />
+        <li>
+            http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
+        </li>
+        <br />
+        <li>
+            https://www.youtube.com/watch?v=riijspB9DIQ
+        </li>
+        <br />
+        <li>
+            https://www.youtube.com/watch?v=_SmPR5mvH7w&t=321s
 
-<p style="font-size:13px">
-We are striving to put a modern twist on the classic concepts found in Valve’s Portal. Both from a graphics implementation and conceptual perspective, the idea of portals is incredibly intriguing. The main focus of this project will be to create a demo where the user can place multiple portals within the world through which they can place objects, or walk through themselves. However, we will be going a couple of steps further and allowing for the use of portals of different sizes, as well as making the demo playable in first person in VR. The idea behind having portals of different sizes is that the scale of whatever passes through the portal will be adjusted to match the difference in size from the original portal to the new one. <br><br>
-
-<b>We think this problem is important because it is really cool. Seriously though, this idea just sounds fun and intriguing. That's why we are doing it.</b> <br><br>
-    
-One difficult part of this project will be figuring out how to accurately and realistically map one side of the portal to the other. Another challenge will be to solve recursive portals. Honestly, this whole project is incredibly challenging because the implementation raises A LOT of questions. It would be really arrogant to claim that we already know what the most challenging part is before starting. There are SO MANY conceptual problems you can think of fairly immediately from a game engine perspective. (We've listed some below....)
- </p>  
-<ul style="font-size:13px">
-  <li>When an object is passing through the portal (halfway through) do we need two mesh representations spawned in the game worlds on both sides? Or is there some kind of clever way we can do shading and rendering tricks to translate half to one side of the portal and half to the other? 
-</li><br>
-  <li>When looking through portals that obscure one another, should we render infinitely through the portals (imagine a webcam pointed at the result of the webcam) ? </li><br>
-  <li>How do you implement ray casting through a portal? Unity has built in function for ray casting we will probably have to rewrite ourselves for this</li><br>
-  <li>Our stretch goal is to allow the user to turn any surface into a portal → I’m not sure where to even start with this one! </li><br>
-  <li>Can a user peer through or go through a portal of any size? We would have to figure out how to scale the user as they go through as well. </li>
-</ul>
-
-   
-
-
-
-        
-
-<hr>
-<h2 align="left">Our MVP (Plan)</h2>
-
-<ul style="font-size:13px">
-  <li>Players should be able to interact in a virtual reality environment, create portals on command, and see and move through portals 
-    </li><br>
-    
-  <li>Working Portals in Unity that support teleportation and size-scaling for AT LEAST the player themself (specifics listed below)
-      
-    <ul style="font-size:13px"><br>
-      <li>Smooth transitions from one portal to the other
-    </li><br>
-      <li>The ability to see through portals  </li><br>
-      <li>The ability to raycast through the portals</li><br>
-      <li>The ability to walk through the poratls </li><br>
-      <li>The ability to create portals of any size (within our minimum - maximum constraint) anywhere </li><br>
-      <li>Some way of handling recursive portal rendering when they are obscuring each other</li><br>
-        <li>Figuring out how we want to handle the "backside" of a portal</li><br>
+        </li>
+        <br />
     </ul>
-</li><br>
-    
-<li>Full VR integration along with some kind of locomotion that pairs well with the portals
-      
-    <ul style="font-size:13px"><br>
-      <li>The ability to deal with moving through portals that “don’t fit” the player
+    <hr />
 
-    </li><br>
-      <li>The ability to potentially raycast through the portals to teleport (boring) 
- </li><br>
-      <li>Supports all relevant headsets</li><br>
+
+
+    <h2 align="left">Contributions</h2>
+    <p>
+        A clear description of the work contributed by each team member.
+    </p>
+
+    <ul>
+
+        Paxtan:
+
+        <ul>
+            <br />
+            <li>
+                Create Project Proposal
+            </li>
+            <br />
+        </ul>
+
+        Austin:
+        <ul>
+            <br />
+            <li>
+                Setting up a basic environment to test-create portals
+
+            </li>
+            <br />
+        </ul>
+
+        Emily
+
+        <ul>
+            <br />
+            <li>The ability to walk through the portals</li>
+            <br />
+
+        </ul>
     </ul>
-</li><br>
-    
-    
-    
-</ul>
+    <hr />
 
+    </p>
 
-
-<hr>
-    
-    
-    
-    
-<h2 align="left">Why we think we can accomplish these goals</h2>
-
-    <ul style="font-size:13px">
-  <li>We believe this class has taught us enough of rendering to dive deeper into the Unity nitty gritty than we could before 
-</li><br>
-  <li>This project involves a lot of consideration of camera space/world space positions and translations like those we have already been doing in this class. </li><br>
-  <li>All three of us are facilitators for the VR Decal, so we don’t think the VR component of this project will be all that hard to do. While cool, VR is not the primary focus of the project because of this.</li><br>
-</ul>
-
-<hr>
-    
-    
-    
-    
-<h2 align="left">What we hope to deliver (stretch goals)</h2>
-
-    <ul style="font-size:13px">
-  <li>The ability to transform any surface into a portal, rather than creating a portal in world space from scratch
-</li><br>
-  <li>A unique solution to the backside of the portal (this is kind of an unanswered questions)</li><br>
-  <li>Cool puzzle implementations to pair with our unique portal system</li><br>
-</ul>
-
-    
-<hr>
-    
-    
-    
-    
-<h2 align="left">How are we measuring?</h2>
-    
-  <p style="font-size:13px">
-There isn't really anything to measure. Do portals work? Does it run well enough to match most VR experiences? Is everything smooth? If yes to all of these ---> 100% <br><br>
- </p>  
-    
-
-<hr>
-    
-    
-    
-    
-<h2 align="left">Schedule</h2>
-  
-    
-<ul style="font-size:13px">
- <li>Week 1 (April 7th - 12th)
-      
-    <ul style="font-size:13px"><br>
-      <li>Create Project Proposal
-    </li><br>
-      <li>Submit Project Proposal </li><br>
-      <li>Wait for Answer</li><br>
-    </ul>
-</li><br>
-    
-     <li>Week 2 (April 12th - 19th)
-      
-    <ul style="font-size:13px"><br>
-      <li>Setting up a basic environment to test-create portals
-
-    </li><br>
-      <li>The ability to create variable size “portal gameobjects” (w/ no functionality) 
- </li><br>
-      <li>The ability to see through the portals</li><br>
-    </ul>
-</li><br>
-
-      <li>Week 3 (April 19th - 26th)
-      
-    <ul style="font-size:13px"><br>
-      <li>The ability to walk through the portals</li><br>
-      <li>Some kind of solution to having a "backside"
- </li><br>
-      <li>Some way of handling recursive portal rendering when they obscure one another</li><br>
-    </ul>
-</li><br>  
-    
-     <li>Week 4 (April 26th - May 3rd)
-      
-    <ul style="font-size:13px"><br>
-      <li>Setting up the final environment</li><br>
-      <li>Smooth transitions from one portal to the other, such as going halfway through the portal
- </li><br>
-      <li>Milestone Deliverables due Tuesday April 28th, 11:59 PM</li><br>
-    </ul>
-</li><br>  
-    
-    <li>Week 5 (May 3rd - 12th)
-      
-    <ul style="font-size:13px"><br>
-      <li>Implement Full VR Integration</li><br>
-      <li>The ability to raycast through portals for VR locomotion
- </li><br>
-      <li>Playtesting and Debugging</li><br>
-        <li>Final Deliverables due Tuesday, May 12th, 11:59PM</li><br>
-    </ul>
-    
-</ul>
-    
-<hr>
-    
-    
-    
-    
-<h2 align="left">Resources</h2>
-    
-       <ul style="font-size:13px">
-  <li>https://en.wikipedia.org/wiki/Portal_(video_game)
-</li><br>
-  <li>http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
-</li><br>
-  <li>https://www.youtube.com/watch?v=riijspB9DIQ
-</li><br>
-    <li>https://www.youtube.com/watch?v=_SmPR5mvH7w&t=321s
-
-</li><br>
-</ul>
-    
-    
 </body>
 </html>
