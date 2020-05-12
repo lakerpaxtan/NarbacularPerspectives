@@ -73,11 +73,30 @@
     <h3 align="left">1. First Person Character, Gun, Scene and Game Management</h3>
     <p> Insert text here.</p>
 
-    <h3 align="left">2. Portal Pairing, Portal Rendering, Camera Movement</h3>
-    <p> Insert text here. Break down into whichever steps!</p>
+    <h3 align="left">2. Portal Rendering</h3>
+    <h4 align="left">Portal Pairing and Camera Movement</h4>
+    <p> The first thing we had to do was figure out how we wanted the portals to work under the hood. There are about 1000 different ways you can do portals, but we decided to basically pursue a camera rendering route where each portal has a camera that follows it's respective paired portal using local coordinate translation.</p>
+    <p> Suppose you are looking through Portal 1 at a 2 height, 3 width offset at a 60 degree angle (you = your fps model). For getting the correct camera view in respect to Portal 2, you need to translate these deltas to the other portal using local coordinates. Basically, you would want your paired camera to be at a 2 height, 3 width offset (and 60 degree angle) from Portal 2 with respect to the OPPOSITE normal. This gets into some weird math, but basically if you are in front of your Portal 1, you actually need your paired camera to be BEHIND portal 2 to get the correct viewpoint. This is a simple rotational matrix conversion, but it took a while to figure out and debug.</p>
+    <p> Just to make sure we are on the same page --> Each portal is going to have a paired camera that is generally behind it's paired portal. I'm going to link some videos showcasing our progress on this below, but it's important to understand that we have these paired cameras so that we can basically emulate our character standing there and render what you would be seeing if you had "preemptively" gone through the portal and could see the other side. There is some image cropping, texture mapping, and rendering stuff related to this we have to talk about later, but ultimately that's the main idea.</p>
+
+    <h4 align="left">Custom Portal Shader</h4>
+    <p> In order to get the view from each of these cameras onto the portals, we created a custom shader that was applied to the quad on each of the portals. We first set the output of each camera to a RenderTexture and applied these to each portal’s quad material. This naïve approach didn’t look quite right because it was applied the entire view of the camera to the portal, when we only wanted a cropped version of this with dimensions based on the direction and distance the player was looking at the portal from.</p>
+    <p> To fix this, we created a custom shader for the portals that would take the texture generated from the camera view, but instead of using the entire thing, it only used the part that corresponding to the UV coordinates of each position in screen space for the player. This gave us the cropping effect that can be seen in the third video below. With this custom shader, we were then also able to make the surface of the portals unlit so that they do not reflect light as if they were a flat wall.</p>
+    <p> We also took into account the fact that there could be objects in between the camera and the back of the portal that we did not want to be rendered. We solved this problem by changing the near clip plane of each of the cameras to be an oblique projection from the camera to the portal’s plane. This way it would only render objects in front of the portal which also allows us to place these portals directly onto walls without any clipping. The equation we used to solve for these oblique projections can be found in the sources below and is also cited in our code. </p>
+    
+    <h4 align="left">Recursive Portal Rendering</h4>
+    <p> At this point, looking through portals looks very natural and convincing. However, there is still a problem if two paired portals are facing each other and you try to look at one of the portals through the other portal. Each frame, it shows the view of the paired portal from the previous frame which gives it this Windows XP Solitaire victory effect. </p>
+    <p> This problem necessitated rendering each portal’s view multiple times, and from different positions and angles. The algorithm works like this: Each frame, we calculate the appropriate position and rotation of the portal camera based on the position of the player. We then calculate the position and rotation again, but using the new position and rotation from the portal camera that we just calculated. We keep calculating this any number of times equal to the recursiveRenderLimit that we set. Naturally, this severally impacts performance, so we kept it somewhere between 5 and 10. Finally, we render the portal camera at each of these positions and rotations in reverse order (the view farthest away is rendered first, and the closest view that was the only one we were using previously is rendered last). This gives a very nice recursive portal effect that is similar to the effect you would get if you pointed two mirrors at each other. </p>
 
     <h3 align="left">3. Teleportation</h3>
-    <p> Insert text here. Break down into whichever steps! Include scaling.</p>
+    <h4 align="left">Cloning</h4>
+    <p> Insert text here.</p>
+    <h4 align="left">Deadzones</h4>
+    <p> Insert text here.</p>
+    <h4 align="left">Cross Section Shader</h4>
+    <p> Insert text here.</p>
+    <h4 align="left">Portal and Object Scaling</h4>
+    <p> Insert text here.</p>
 
     <h3 align="left">4. Portal Creation</h3>
     <p> Insert text here.</p>
