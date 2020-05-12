@@ -112,12 +112,12 @@ public class PortalCreation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Raycasting
+        // Raycasting line of sight
         Ray ray = new Ray(transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction);
+
         Physics.Raycast(ray, out RaycastHit hit, range);
         lineOfSight.SetPosition(0, ray.origin);
 
-        // Ray hits collider, begin creating portals
         if (hit.collider)
         {
             lineOfSight.SetPosition(1, hit.point);
@@ -127,6 +127,7 @@ public class PortalCreation : MonoBehaviour
             lineOfSight.SetPosition(1, ray.GetPoint(range));
         }
 
+        // Start creating portals
         if (Input.GetButtonDown("Portal"))
         {
             if (one_click) // double click -- cancel portal
@@ -139,40 +140,58 @@ public class PortalCreation : MonoBehaviour
                 one_click = true;
                 timer = Time.time;
 
-                if (hit.collider)
+                if (stage == 0) // Start off A
                 {
-                    if (stage == 0) // Start off A
+                    if (hit.collider)
                     {
                         if (!hit.transform.gameObject.CompareTag("Portal"))
                         {
                             stage = 1;
                             a.norm = hit.normal;
                             a.attachedTo = hit.transform.gameObject;
-                            StartA(a, hit.point);
+                            StartA(hit.point);
                         }
-                    }
-                    else if (stage == 1 && a.IsValid()) // Set Outline A, start off B
+                    } else
                     {
-                        scaleText.enabled = true;
-                        stage = 2;
-                        b.outline.enabled = true;
-                    }
-                    else if (stage == 2 && b.IsValid()) // Set Outline B, create portals
-                    {
-                        StartCoroutine(SpecialPortal());
+                        stage = 1;
+                        a.norm = hit.normal;
+                        a.attachedTo = null;
+                        StartA(ray.GetPoint(range));
                     }
                 }
+                else if (stage == 1 && a.IsValid()) // Set Outline A, start off B
+                {
+                    scaleText.enabled = true;
+                    stage = 2;
+                    b.outline.enabled = true;
+                }
+                else if (stage == 2 && b.IsValid()) // Set Outline B, create portals
+                {
+                    StartCoroutine(SpecialPortal());
+                }
+            }
+        }
+
+        if (stage == 1)
+        {
+            if (hit.collider)
+            {
+                if (!hit.collider.CompareTag("Portal") && a.attachedTo &&
+                hit.collider == a.attachedTo.GetComponent<Collider>() && hit.normal == a.norm)
+                {
+                    UpdateA(hit.point);
+                }
+            } else if (!a.attachedTo)
+            {
+                //Vector3 point = ProjectPointOnPlane(-transform.TransformDirection(Vector3.forward), a.outline.GetPosition(0), ray.GetPoint(range));
+                //Debug.DrawLine(a.outline.GetPosition(0), point, color: Color.black);
+                UpdateA(ray.GetPoint(range));
             }
         }
 
         if (hit.collider && !hit.collider.CompareTag("Portal"))
         {
-            if (stage == 1 && hit.collider == a.attachedTo.GetComponent<Collider>()
-                && hit.normal == a.norm)
-            {
-                UpdateA(hit.point);
-            }
-            else if (stage == 2)
+            if (stage == 2)
             {
                 if (Input.GetAxis("Scale") != 0)
                 {
@@ -208,7 +227,7 @@ public class PortalCreation : MonoBehaviour
     /// <summary>
     /// This method kicks off A's outline.
     /// </summary>
-    void StartA(Outline a, Vector3 hit)
+    void StartA(Vector3 hit)
     {
         a.outline.enabled = true;
         a.outline.SetPosition(0, hit + a.norm * offset);
@@ -225,16 +244,26 @@ public class PortalCreation : MonoBehaviour
         a.outline.SetPosition(2, v);
 
         Vector3 mid = (u + v) / 2;
-        Vector3 orth1 = a.mid;
-        Vector3 orth2 = a.mid;
+        Vector3 orth1 = a.mid; // width
+        Vector3 orth2 = a.mid; // height
 
         Vector3 ground = new Vector3(0, 0, 0);
         Vector3.OrthoNormalize(ref a.norm, ref ground, ref orth1);
         Vector3.OrthoNormalize(ref a.norm, ref ground, ref orth2);
         Vector3.OrthoNormalize(ref a.norm, ref orth1, ref orth2);
 
-        LineIntersection(out Vector3 j, u, v, orth1, orth2);
-        LineIntersection(out Vector3 i, u, v, orth2, orth1);
+        LineIntersection(out Vector3 j, u, orth2, v, orth1);
+        LineIntersection(out Vector3 i, u, orth1, v, orth2);
+
+        Ray m = new Ray(v, orth1);
+        Ray n = new Ray(v, orth2);
+        Debug.DrawLine(v, m.GetPoint(10), color: Color.blue);
+        Debug.DrawLine(v, n.GetPoint(10), color: Color.red);
+
+        Ray q = new Ray(u, orth1);
+        Ray r = new Ray(u, orth2);
+        Debug.DrawLine(u, q.GetPoint(10), color: Color.blue);
+        Debug.DrawLine(u, r.GetPoint(10), color: Color.red);
 
         a.outline.SetPosition(1, i);
         a.outline.SetPosition(3, j);
@@ -251,7 +280,7 @@ public class PortalCreation : MonoBehaviour
     /// Given a point p0 and its line line0, return if there exists 
     /// an intersection with point p2 and line2.
     /// </summary>
-    bool LineIntersection(out Vector3 intersection, Vector3 p0, Vector3 p2, Vector3 line0, Vector3 line2)
+    bool LineIntersection(out Vector3 intersection, Vector3 p0, Vector3 line0, Vector3 p2, Vector3 line2)
     {
         Vector3 line3 = p2 - p0;
         Vector3 cross1and2 = Vector3.Cross(line0, line2);
@@ -267,6 +296,24 @@ public class PortalCreation : MonoBehaviour
         }
         intersection = Vector3.zero;
         return false;
+    }
+
+    Vector3 ProjectPointOnPlane(Vector3 planeNormal, Vector3 planePoint, Vector3 point)
+    {
+        float distance;
+        Vector3 translationVector;
+
+        //First calculate the distance from the point to the plane:
+        distance = Vector3.Dot(planeNormal, (point - planePoint));
+
+        //Reverse the sign of the distance
+        distance *= -1;
+
+        //Get a translation vector
+        translationVector = Vector3.Normalize(planeNormal) * distance;
+
+        //Translate the point to form a projection
+        return point + translationVector;
     }
 
     /// <summary>
@@ -303,11 +350,11 @@ public class PortalCreation : MonoBehaviour
         {
             stage = 3;
             yield return new WaitForSeconds(doubleClickDelay);
-            CreatePortals(a, b);
+            CreatePortals();
             Reset();
         }
     }
-    void CreatePortals(Outline a, Outline b)
+    void CreatePortals()
     {
         Portal portalA = new Portal(a.w, a.h, a.mid, a.norm, player, "a" + numPortals, prefPortal, borderMat);
         portalA.attachedTo = a.attachedTo;
