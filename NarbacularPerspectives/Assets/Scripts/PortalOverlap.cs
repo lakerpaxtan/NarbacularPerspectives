@@ -43,7 +43,7 @@ public class PortalOverlap : MonoBehaviour
     public void UpdatePlane(Vector3 mid, Vector3 norm, float width, float height)
     {
         transform.position = mid;
-        transform.localScale = new Vector3(width, height, 1);
+        transform.localScale = new Vector3(width, height, .2f);
         transform.rotation = Quaternion.FromToRotation(Vector3.forward, -norm);
     }
 }
