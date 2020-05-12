@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour
 {
@@ -17,12 +18,6 @@ public class MenuController : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         StartCoroutine(WriteText("Narbacular \nPerspectives", mainText));
         StartCoroutine(MoveBackground());
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     IEnumerator WriteText(string str, GameObject text)
@@ -73,5 +68,7 @@ public class MenuController : MonoBehaviour
             background.GetComponent<Image>().color = alpha;
             yield return null;
         }
+
+        SceneManager.LoadScene(1);
     }
 }
