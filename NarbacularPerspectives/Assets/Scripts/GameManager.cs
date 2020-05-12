@@ -4,30 +4,26 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-
-
     public GameObject flareGun;
     public GameObject playerObject;
     public GameObject portalPref;
 
     public Material borderMat;
+    public List<Portal> portalList;
 
     void Awake() {
         Cursor.lockState = CursorLockMode.Locked;
+        portalList = new List<Portal>();
+
     }
-
-    
-    public List<Portal> portalList;
-
 
     // Start is called before the first frame update
     void Start()
     {
-        portalList = new List<Portal>();
-        TestPortals();
+        //TestPortals();
     }
 
-    void TestPortals()
+    public void TestPortals()
     {
         flareGun.SetActive(true);
         Portal testPortal = new Portal(4, 4, new Vector3(8f, 2, 10), new Vector3(1, 0, -1), playerObject, "testOne", portalPref, borderMat);

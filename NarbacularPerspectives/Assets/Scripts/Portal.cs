@@ -34,8 +34,6 @@ public class Portal
 
     public static Dictionary<GameObject, Portal> portalTable = new Dictionary<GameObject, Portal>();
     
-
-
     public Portal(float width, float height, Vector3 middlePos, Vector3 normal, GameObject player, string str, GameObject planePrefab, Material borderMat)
     {
         this.width = width;
