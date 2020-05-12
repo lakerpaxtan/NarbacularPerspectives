@@ -35,8 +35,6 @@ public class PortalCreation : MonoBehaviour
 
     float scale;
     public Text scaleText;
-    public Text text;
-    public float readTime;
 
     class Outline
     {
@@ -105,23 +103,10 @@ public class PortalCreation : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        lineOfSight = gameObject.transform.GetComponentInChildren<LineRenderer>();
         numPortals = 0;
-
         a = new Outline(outlineA, planeA);
         b = new Outline(outlineB, planeB);
         Reset();
-
-        text.text = "right click to create portal";
-        StartCoroutine(Instruct());
-    }
-
-    IEnumerator Instruct()
-    {
-        text.enabled = true;
-        text.text = text.text.ToUpper();
-        yield return new WaitForSeconds(readTime);
-        text.enabled = false;
     }
 
     // Update is called once per frame
@@ -177,11 +162,6 @@ public class PortalCreation : MonoBehaviour
                         StartCoroutine(SpecialPortal());
                     }
                 }
-                //else
-                //{
-                //    Reset();
-                //}
-
             }
         }
 
