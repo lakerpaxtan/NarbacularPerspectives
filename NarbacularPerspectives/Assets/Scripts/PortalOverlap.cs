@@ -5,7 +5,7 @@ using UnityEngine;
 public class PortalOverlap : MonoBehaviour
 {
     public bool valid = true;
-
+    static float offset = .1f;
     public List<GameObject> overlap;
 
     void Start()
@@ -42,7 +42,7 @@ public class PortalOverlap : MonoBehaviour
 
     public void UpdatePlane(Vector3 mid, Vector3 norm, float width, float height)
     {
-        transform.position = mid;
+        transform.position = mid + norm * offset;
         transform.localScale = new Vector3(width, height, .2f);
         transform.rotation = Quaternion.FromToRotation(Vector3.forward, -norm);
     }

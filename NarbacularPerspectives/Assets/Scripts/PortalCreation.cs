@@ -198,8 +198,6 @@ public class PortalCreation : MonoBehaviour
                     scale = Mathf.Max(scale + Input.GetAxis("Scale"), .1f);
                     scaleText.text = "Scale: " + scale.ToString("x#.##");
                 }
-
-                //SetB(hit.point, hit.normal, hit.collider);
                 b.attachedTo = hit.transform.gameObject;
                 UpdateB(hit.point, hit.normal);
             }
@@ -252,8 +250,8 @@ public class PortalCreation : MonoBehaviour
         Vector3.OrthoNormalize(ref a.norm, ref ground, ref orth2);
         Vector3.OrthoNormalize(ref a.norm, ref orth1, ref orth2);
 
-        LineIntersection(out Vector3 j, u, orth2, v, orth1);
-        LineIntersection(out Vector3 i, u, orth1, v, orth2);
+        LineIntersection(out Vector3 j, u, orth1, v, orth2);
+        LineIntersection(out Vector3 i, u, orth2, v, orth1);
 
         Ray m = new Ray(v, orth1);
         Ray n = new Ray(v, orth2);
@@ -294,6 +292,7 @@ public class PortalCreation : MonoBehaviour
             intersection = p0 + line0 * s;
             return true;
         }
+        Debug.Log("WHYY");
         intersection = Vector3.zero;
         return false;
     }
