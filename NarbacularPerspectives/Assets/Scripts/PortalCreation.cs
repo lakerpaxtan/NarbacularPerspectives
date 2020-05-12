@@ -9,10 +9,12 @@ public class PortalCreation : MonoBehaviour
     float timer;
     public float doubleClickDelay = .2f;
 
+    public Material borderMat;
+
     // ui kinda
     int stage = 0; // 0: no portals created / 1: portal a being created / 2: portal a created, portal b ready to place
     public float range = 20f;
-    LineRenderer lineOfSight;
+    public LineRenderer lineOfSight;
 
     public float offset = 0.04f;
 
@@ -24,6 +26,8 @@ public class PortalCreation : MonoBehaviour
     Outline a;
     Outline b;
 
+
+    public GameObject prefPortal;
     public LineRenderer outlineA;
     public LineRenderer outlineB;
     public GameObject player;
@@ -324,10 +328,10 @@ public class PortalCreation : MonoBehaviour
     }
     void CreatePortals(Outline a, Outline b)
     {
-        Portal portalA = new Portal(a.w, a.h, a.mid, a.norm, player, "a" + numPortals);
+        Portal portalA = new Portal(a.w, a.h, a.mid, a.norm, player, "a" + numPortals, prefPortal, borderMat);
         portalA.attachedTo = a.attachedTo;
 
-        Portal portalB = new Portal(b.w, b.h, b.mid, b.norm, player, "b" + numPortals);
+        Portal portalB = new Portal(b.w, b.h, b.mid, b.norm, player, "b" + numPortals, prefPortal, borderMat);
         portalB.attachedTo = b.attachedTo;
 
         Portal.pairPortals(portalA, portalB);
