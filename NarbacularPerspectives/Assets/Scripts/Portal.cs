@@ -12,13 +12,19 @@ public class Portal
     public Portal otherPortal;
     public GameObject attachedTo;
 
-    private GameObject portalCam;
+    public GameObject portalCam;
+
+    public GameObject prefabPlane;
+
+    private int recursiveRenderLimit = 10;
 
     public GameObject actualPlane;
     public GameObject reversePlane;
     public GameObject borderPlane;
     float width;
     float height;
+
+    public Material borderMat;
     private GameObject playerObject; 
 
     public float scaleFactor;
@@ -30,7 +36,7 @@ public class Portal
     
 
 
-    public Portal(float width, float height, Vector3 middlePos, Vector3 normal, GameObject player, string str)
+    public Portal(float width, float height, Vector3 middlePos, Vector3 normal, GameObject player, string str, GameObject planePrefab, Material borderMat)
     {
         this.width = width;
         this.height = height;
@@ -38,9 +44,11 @@ public class Portal
         normalVec = normal;
         normalVec.Normalize();
         playerObject = player;
+        this.borderMat = borderMat;
         name = str;
         cameraTexture = new RenderTexture(Screen.width, Screen.height, 0);
         portalShader = Shader.Find("Unlit/PortalShader");
+        this.prefabPlane = planePrefab;
 
         createPortalBoundaries();
         createPortalCamera();
@@ -51,7 +59,8 @@ public class Portal
     //Gonna use a plane for now --> Planning on just drawing right in front of it
     private void createPortalBoundaries()
     {
-        actualPlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
+
+        actualPlane = MonoBehaviour.Instantiate(prefabPlane);
         actualPlane.tag = "Portal";
         actualPlane.transform.position = gameObjectPos;
         actualPlane.name = name;
@@ -63,8 +72,9 @@ public class Portal
         UnityEngine.Object.Destroy(borderPlane.GetComponent<MeshCollider>());
         borderPlane.transform.position = gameObjectPos - 0.01f * normalVec;
         borderPlane.name = name + "border";
-        borderPlane.transform.localScale = actualPlane.transform.localScale + new Vector3(0.1f, 0.1f, 0f);
+        borderPlane.transform.localScale = 1.05f* actualPlane.transform.localScale;
         borderPlane.transform.rotation = actualPlane.transform.rotation;
+        borderPlane.transform.GetComponent<Renderer>().material = borderMat;
 
         reversePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
         reversePlane.tag = "Portal";
@@ -109,11 +119,16 @@ public class Portal
         tempCam.enabled = false;
         tempCam.cullingMask = tempCam.cullingMask & ~(1<<1);
         portalCam.name = name + "Cam"; 
+        
     }
 
 
     public void updateCameraRelativeToPlayer() {
         if (isPaired) {
+            
+            Vector3 oldReverse = this.otherPortal.reversePlane.transform.localScale;
+            this.otherPortal.reversePlane.transform.localScale = this.actualPlane.transform.localScale;
+            
             Vector3 relativePos = actualPlane.transform.InverseTransformPoint(playerObject.transform.position);
             this.portalCam.transform.position = this.otherPortal.reversePlane.transform.TransformPoint(relativePos);
 
@@ -121,8 +136,13 @@ public class Portal
             this.portalCam.transform.rotation = relativeRot * this.playerObject.transform.rotation;
 
             if (portalCam.transform.eulerAngles[2] == 180 || portalCam.transform.eulerAngles[2] == -180 || normalVec == otherPortal.normalVec){
+                //Debug.Log("rotate around me daddy");
                 this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.forward, 180);
             }
+
+           
+            this.otherPortal.reversePlane.transform.localScale = oldReverse;
+
         }
     }
 
@@ -136,6 +156,9 @@ public class Portal
         portal2.scaleFactor = (portal1.width * portal1.height) / (portal2.width * portal2.height);
         portal1.scaleFactor = (portal2.width * portal2.height) /  (portal1.width * portal1.height);
 
+        //portal2.portalCam.transform.localScale *= portal1.scaleFactor;
+        //portal1.portalCam.transform.localScale *= portal2.scaleFactor;
+
     }
 
     public void texturePortal() {
@@ -145,11 +168,17 @@ public class Portal
         portalCam.GetComponent<Camera>().targetTexture = cameraTexture;
         otherPortal.portalCam.GetComponent<Camera>().targetTexture = otherPortal.cameraTexture;
 
+        actualPlane.GetComponent<Renderer>().material.SetTexture("_MainTex", Texture2D.blackTexture);
+        otherPortal.actualPlane.GetComponent<Renderer>().material.SetTexture("_MainTex", Texture2D.blackTexture);
+
         portalCam.GetComponent<Camera>().Render();
         otherPortal.portalCam.GetComponent<Camera>().Render();
 
         actualPlane.GetComponent<Renderer>().material.SetTexture("_MainTex", cameraTexture);
         otherPortal.actualPlane.GetComponent<Renderer>().material.SetTexture("_MainTex", otherPortal.cameraTexture);
+
+        renderCamera();
+        otherPortal.renderCamera(); 
     }
 
    
@@ -160,7 +189,12 @@ public class Portal
         float dist = -(Vector3.Dot(normalVec, actualPlane.transform.position));
         Vector4 obliquePlane = new Vector4(reversePlane.transform.forward.x, reversePlane.transform.forward.y, reversePlane.transform.forward.z, dist);
         Vector4 cameraSpaceObliquePlane = Matrix4x4.Transpose(Matrix4x4.Inverse(otherPortal.portalCam.GetComponent<Camera>().worldToCameraMatrix)) * obliquePlane;
-        otherPortal.portalCam.GetComponent<Camera>().projectionMatrix = playerObject.GetComponent<Camera>().CalculateObliqueMatrix(cameraSpaceObliquePlane);
+        
+        otherPortal.portalCam.GetComponent<Camera>().projectionMatrix = playerObject.transform.GetComponent<Camera>().CalculateObliqueMatrix(cameraSpaceObliquePlane);
+        if(actualPlane.name == "testFive" || actualPlane.name == "testSix"){
+            //Debug.Log(actualPlane.name + " dist " + dist + " plane " + obliquePlane + " cameraspace " + cameraSpaceObliquePlane);
+            //Debug.Log(otherPortal.portalCam.GetComponent<Camera>().projectionMatrix);
+        }
     }
 
     private void updateCameraTexture() {
@@ -168,11 +202,50 @@ public class Portal
     }
 
     public void update() {
-        updateCameraRelativeToPlayer();
+        
         updateNearClipPlane();
-        otherPortal.updateCameraRelativeToPlayer();
         otherPortal.updateNearClipPlane();
         texturePortal();
     }
+
+
+    public void renderCamera() {
+        ArrayList positions = new ArrayList();
+        ArrayList rotations = new ArrayList();
+        
+        Vector3 tempPos = new Vector3(this.playerObject.transform.position[0], this.playerObject.transform.position[1], this.playerObject.transform.position[2]);
+        Quaternion tempRot = new Quaternion(this.playerObject.transform.rotation[0], this.playerObject.transform.rotation[1], this.playerObject.transform.rotation[2], this.playerObject.transform.rotation[3]);
+
+        for (int i = 0; i < recursiveRenderLimit; i ++) {
+            Vector3 oldReverse = this.otherPortal.reversePlane.transform.localScale;
+            this.otherPortal.reversePlane.transform.localScale = this.actualPlane.transform.localScale;
+
+
+            Vector3 relativePos = actualPlane.transform.InverseTransformPoint(tempPos);
+            tempPos = this.otherPortal.reversePlane.transform.TransformPoint(relativePos);
+
+            Quaternion relativeRot = Quaternion.FromToRotation(-normalVec, this.otherPortal.normalVec);
+            tempRot = relativeRot * tempRot;
+
+            this.otherPortal.reversePlane.transform.localScale = oldReverse;
+            
+            positions.Add(new Vector3(tempPos[0], tempPos[1], tempPos[2]));
+            rotations.Add(new Quaternion(tempRot[0], tempRot[1], tempRot[2], tempRot[3]));
+        }
+
+        for (int i = recursiveRenderLimit - 1; i >= 0; i -= 1) {
+            this.portalCam.transform.position = (Vector3) positions[i];
+            this.portalCam.transform.rotation = (Quaternion) rotations[i];
+
+            if (portalCam.transform.eulerAngles[2] == 180 || portalCam.transform.eulerAngles[2] == -180 || normalVec == otherPortal.normalVec){
+                this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.forward, 180);
+            }
+
+            //updateNearClipPlane();
+            portalCam.GetComponent<Camera>().Render();
+        }
+    }
+
+
 
 }
