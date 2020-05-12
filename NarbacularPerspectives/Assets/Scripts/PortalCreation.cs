@@ -12,6 +12,7 @@ public class PortalCreation : MonoBehaviour
     // ui kinda
     int stage = 0; // 0: no portals created / 1: portal a being created / 2: portal a created, portal b ready to place
     public float range = 20f;
+    float speed = .1f;
     public LineRenderer lineOfSight;
 
     public float offset = 0.04f;
@@ -44,7 +45,7 @@ public class PortalCreation : MonoBehaviour
         public float w;
         public float h;
         public GameObject attachedTo;
-        readonly GameObject c;
+        public GameObject c;
 
         public Outline(LineRenderer x, GameObject collider)
         {
@@ -151,7 +152,7 @@ public class PortalCreation : MonoBehaviour
                             a.attachedTo = hit.transform.gameObject;
                             StartA(hit.point);
                         }
-                    } 
+                    }
                     //else
                     //{
                     //    stage = 1;
@@ -159,16 +160,18 @@ public class PortalCreation : MonoBehaviour
                     //    a.attachedTo = null;
                     //    StartA(ray.GetPoint(range));
                     //}
-                }
-                if (hit.collider)
+                } else if (stage == 1) // Set Outline A, start off B
                 {
-                    if (stage == 1 && a.IsValid()) // Set Outline A, start off B
+                    if (hit.collider && a.IsValid())
                     {
                         scaleText.enabled = true;
                         stage = 2;
                         b.outline.enabled = true;
                     }
-                    else if (stage == 2 && b.IsValid()) // Set Outline B, create portals
+                }
+                else if (stage == 2) // Set Outline B, create portals
+                {
+                    if (b.IsValid())
                     {
                         StartCoroutine(SpecialPortal());
                     }
@@ -186,28 +189,39 @@ public class PortalCreation : MonoBehaviour
                 {
                     UpdateA(hit.point);
                 }
-            } 
+            }
             //else if (!a.attachedTo)
             //{
             //    //Vector3 point = ProjectPointOnPlane(-transform.TransformDirection(Vector3.forward), a.outline.GetPosition(0), ray.GetPoint(range));
             //    //Debug.DrawLine(a.outline.GetPosition(0), point, color: Color.black);
             //    UpdateA(ray.GetPoint(range));
             //}
-        }
-
-        if (hit.collider && !hit.collider.CompareTag("Portal"))
+        } else if (stage == 2)
         {
-            if (stage == 2)
+            if (Input.GetAxis("Scale") != 0)
             {
-                if (Input.GetAxis("Scale") != 0)
-                {
-                    scale = Mathf.Max(scale + Input.GetAxis("Scale"), .1f);
-                    scaleText.text = "Scale: " + scale.ToString("x#.##");
-                }
-                b.attachedTo = hit.transform.gameObject;
-                UpdateB(hit.point, hit.normal);
+                scale = Mathf.Max(scale + Input.GetAxis("Scale"), .1f);
+                scaleText.text = "Scale: " + scale.ToString("x#.##");
             }
-        }
+
+            if (Input.GetButton("Range"))
+            {
+                range = Mathf.Max((range + speed) % 20f, 3);
+            }
+
+            if (hit.collider)
+            {
+                if (!hit.collider.CompareTag("Portal"))
+                {
+
+                    b.attachedTo = hit.transform.gameObject;
+                    UpdateB(hit.point, hit.normal);
+                }
+            } else
+            {
+                UpdateB(ray.GetPoint(range), -transform.TransformDirection(Vector3.forward));
+            }
+        } 
 
         // reset double click timer
         if (one_click && Time.time - timer > doubleClickDelay)
@@ -223,8 +237,11 @@ public class PortalCreation : MonoBehaviour
     {
         stage = 0;
         scale = 1;
+        range = 20;
         a.outline.enabled = false;
         b.outline.enabled = false;
+        a.c.SetActive(false);
+        b.c.SetActive(false);
         scaleText.enabled = false;
     }
 
@@ -361,8 +378,11 @@ public class PortalCreation : MonoBehaviour
         {
             stage = 3;
             yield return new WaitForSeconds(doubleClickDelay);
-            CreatePortals();
-            Reset();
+            if (a.outline.enabled)
+            {
+                CreatePortals();
+                Reset();
+            }
         }
     }
     void CreatePortals()
