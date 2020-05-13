@@ -48,8 +48,7 @@
 
     <h2 align="left">Abstract</h2>
     <p>
-      some technical abstract
-
+      This project demonstrates the ability to create and interact with portals of varying sizes and placements in a 3D world. Portals are window/door-like inter-spacial objects that allow a user to peer or walk through to interact with the other pair. By working with camera movement, rendering, shaders, vector directions and rotations, and raycasting, this project demonstrates a seamless portal experience.
     </p>
 
 
@@ -59,7 +58,7 @@
     <p>
       Imagine Valve’s Portal: a world where the user can create a portal anywhere and peer out into a different world.
       <br><br>
-      Portal is a 2007 puzzle-platform game developed and published by Valve. It consists of a series of puzzles that must be solved by teleporting the player's character, using a device that can create inter-spatial portals between two flat planes.
+      Portal is a 2007 puzzle-platform game developed and published by Valve. It consists of a series of puzzles that must be solved by teleporting the player's character, using a device that can create inter-spatial portals between two flat planes. <sup>[1]</sup>
 
       <br><br>
       This project strives to put a modern twist on the classic concepts found in Valve’s Portal. Both from a graphics implementation and conceptual perspective, the idea of portals is incredibly intriguing.
@@ -70,14 +69,17 @@
     <hr />
     <h2 align="left">Technical Approach</h2>
     <p>
-        -A 1-2 page summary of your technical approach, techniques used, algorithms implemented, etc. (use references to papers or other resources for further detail). Highlight how your approach varied from the references used (did you implement a subset, or did you change or enhance anything), the unique decisions you made and why.
-        <br />
-        -A description of problems encountered and how you tackled them.
-        <br />
-        -A description of lessons learned.
+        Our approach consists of 4 sections:
+        <ol>
+          <li>First Person Character, Gun, Scene and Game Management</li>
+          <li>Portal Rendering</li>
+          <li>Teleportation</li>
+          <li>Portal Creation</li>
+        </ol>
     </p>
+
     <h3 align="left">1. First Person Character, Gun, Scene and Game Management</h3>
-    <p> We created a first person controller script that will allow us to move a character sprite around the scene. We also created a gun with physical projectives, audio, and physics. Luckily we are part of the VR DeCal so we were able to steal the basic first person controller and gun from a homework we designed a couple semesters ago (really it's just from Unity's packages)<sup>[1]</sup>.  Both these elements allow us to interact with the portals created later in the project and check that physics and momentum are conserved when moving through portals.
+    <p> We created a first person controller script that will allow us to move a character sprite around the scene. We also created a gun with physical projectives, audio, and physics. Luckily we are part of the VR DeCal so we were able to steal the basic first person controller and gun from a homework we designed a couple semesters ago (really it's just from Unity's packages)<sup>[2]</sup>.  Both these elements allow us to interact with the portals created later in the project and check that physics and momentum are conserved when moving through portals.
     <br><br>
     We then created manager scripts in order to give a general API and abstraction for portal creation, pairing, and rendering. These scripts set up the stage for debugging as we manually create and test our Portals class here.
     <br><br>
@@ -157,7 +159,7 @@
     </div>
 
     <br>
-    We tried creating two vectors that would be orthogonal to the norm so that we can create a rectangle. This worked… but there are many many vectors that exist that would be orthogonal to the norm, so this doesn’t work quite right. They should be parallel to the ground.
+    We tried creating two vectors that would be orthogonal to the norm so that we can create a rectangle. This worked… but there are many other vectors that exist that would be orthogonal to the norm, so this doesn’t work quite right. They should be parallel to the ground.
     (Left is what happened, right is what we want.)
     <br>
     <div align="middle">
@@ -187,7 +189,7 @@
         </table>
     </div>
     <br>
-    Unfortunately, we weren’t able to figure out a way to make this without a surface to be laid on top of as we wouldn’t be able to figure out a norm. It also turns out it’s pretty difficult [impossible] to define a plane based on only two points anyway. <sup>[2]</sup>
+    Unfortunately, we weren’t able to figure out a way to make this without a surface to be laid on top of as we wouldn’t be able to figure out a norm. It also turns out it’s pretty difficult [impossible] to define a plane based on only two points anyway. <sup>[3]</sup>
 
     </p>
 
@@ -206,12 +208,12 @@
     <h4 align="left">User Interface</h4>
     <p>
       The flow of Portal Creation is broken up into 4 different stages.
-      <ol>
+      <ul>
       <li>Stage 0: User has not started creating portals.</li>
       <li>Stage 1: Right click to choose the first point of Portal A.</li>
       <li>Stage 2: Right click to choose the second point of Portal A. Start creating Portal B. Use the mouse scroll wheel to change the scale of Portal B. Use right shift click to change the range of the ray to place the portal.</li>
       <li>Stage 3: Right click to finalize placement of Portal B and instantiate portals!</li>
-      </ol>
+    </ul>
       Double right click at any time to cancel the current portal outlines.
       <br><br>
       Other controls: <br>
@@ -235,12 +237,13 @@ Shoot - left click<br>
     <h2 align="left">References</h2>
 
     <p>
-        <sup>[1]</sup>  https://xr.berkeley.edu/decal/hw5
+      <sup>[1]</sup>https://en.wikipedia.org/wiki/Portal_(video_game)
+      <br>
+        <sup>[2]</sup>  https://xr.berkeley.edu/decal/hw5
         <br>
-        <sup>[2]</sup>  https://math.stackexchange.com/questions/1568091/find-points-of-rectangle-given-two-diagonal-points-and-a-normal-in-3d
+        <sup>[3]</sup>  https://math.stackexchange.com/questions/1568091/find-points-of-rectangle-given-two-diagonal-points-and-a-normal-in-3d
         <br>
-        https://en.wikipedia.org/wiki/Portal_(video_game)
-        <br>
+
 
         http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
         <br>
@@ -257,44 +260,37 @@ Shoot - left click<br>
 
     <h2 align="left">Contributions</h2>
     <p>
-        A clear description of the work contributed by each team member.
-    </p>
-
-    <ul>
-
         Paxtan:
-
         <ul>
-            <br />
             <li>
-                blah
+                First Person Character, Gun, Scene and Game Management
             </li>
-            <br />
+            <li>
+              Portal Rendering
+            </li>
         </ul>
 
         Austin:
         <ul>
-            <br />
-            <li>
-                blah
-            </li>
-            <br />
+          <li>
+            Portal Rendering
+          </li>
+          <li>
+            Teleportation
+          </li>
         </ul>
 
         Emily
 
         <ul>
-            <br />
-            <li>
-              blah
-            </li>
-            <br />
-
+          <li>
+            Portal Creation
+          </li>
         </ul>
-    </ul>
+    </p>
     <hr />
 
-    </p>
+
 
 </body>
 </html>
