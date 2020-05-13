@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public Material borderMat;
     public List<Portal> portalList;
 
+    public bool experiment;
     void Awake() {
         Cursor.lockState = CursorLockMode.Locked;
         portalList = new List<Portal>();
@@ -20,7 +21,11 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //TestPortals();
+        if (experiment)
+        {
+            TestPortals();
+
+        }
     }
 
     public void TestPortals()

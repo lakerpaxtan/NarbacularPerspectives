@@ -16,7 +16,7 @@ public class Portal
 
     public GameObject prefabPlane;
 
-    private int recursiveRenderLimit = 2;
+    private int recursiveRenderLimit = 8;
 
     public GameObject actualPlane;
     public GameObject reversePlane;

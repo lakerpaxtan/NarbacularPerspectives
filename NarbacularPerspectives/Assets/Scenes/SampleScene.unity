@@ -783,6 +783,7 @@ MonoBehaviour:
   portalPref: {fileID: 4816202756639905600, guid: 3020a7a381622c442a1b4cd8994e2535,
     type: 3}
   borderMat: {fileID: 2100000, guid: c733c2f333a89dd4e88a27099b61571d, type: 2}
+  experiment: 1
 --- !u!4 &1254872013
 Transform:
   m_ObjectHideFlags: 0
