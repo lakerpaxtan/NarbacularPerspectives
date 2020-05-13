@@ -82,6 +82,9 @@
     We then created manager scripts in order to give a general API and abstraction for portal creation, pairing, and rendering. These scripts set up the stage for debugging as we manually create and test our Portals class here.
     <br><br>
     There's a likely chance that the player is going to create portals in which they can view themself, so we also decided to add a character model with standard physics properties.
+
+    <br><br>
+    There is some interesting stuff we needed to do with game management involving pre-empting Unity’s colliders and using mutexes to ensure our state space machine behaved correctly with Unity’s concurrent event systems, but this is mostly general coding stuff that doesn’t reveal anything conceptually interesting. Just know that if you use triggers in Unity, be prepared for some weird behaviour when you teleport directly into another trigger. Often times you can get the pattern ENTER (1), ENTER (2), EXIT(1), EXIT(2) instead of what should happen when teleporting “in real life” trigger ENTER(1), EXIT(1), ENTER(2), EXIT(2)
     </p>
 
     <h3 align="left">2. Portal Rendering</h3>
@@ -98,19 +101,95 @@
     <h4 align="left">Recursive Portal Rendering</h4>
     <p> At this point, looking through portals looks very natural and convincing. However, there is still a problem if two paired portals are facing each other and you try to look at one of the portals through the other portal. Each frame, it shows the view of the paired portal from the previous frame which gives it this Windows XP Solitaire victory effect. </p>
     <p> This problem necessitated rendering each portal’s view multiple times, and from different positions and angles. The algorithm works like this: Each frame, we calculate the appropriate position and rotation of the portal camera based on the position of the player. We then calculate the position and rotation again, but using the new position and rotation from the portal camera that we just calculated. We keep calculating this any number of times equal to the recursiveRenderLimit that we set. Naturally, this severally impacts performance, so we kept it somewhere between 5 and 10. Finally, we render the portal camera at each of these positions and rotations in reverse order (the view farthest away is rendered first, and the closest view that was the only one we were using previously is rendered last). This gives a very nice recursive portal effect that is similar to the effect you would get if you pointed two mirrors at each other. </p>
-
     <h3 align="left">3. Teleportation</h3>
     <h4 align="left">Cloning</h4>
     <p> Insert text here.</p>
+    <p> Imagine a portal in real life. If someone were halfway through the portal, what would you see? You would see half of the person (different halves) from each side of the portal. In Unity, things are represented as GameObjects with components, so there is no easy way to “split someone in half”.</p>
+    <p> For the sake of this explanation, imagine we have portal A on the left and portal B on the right, and we are trying to move from A to B. The way we solved this problem is by cloning whatever object is walking through the portal A as soon as they hit its collider. So, quite literally, as soon as you, the player, collides with Portal A, there is a copy of you spawned near portal B. This copy is directly mapped to your movement and rotation relative to the original portal.</p>
+    <p> When you make it “halfway” through Portal A, we store the location of the clone, delete the clone, and then teleport you to that location. Following the abstraction above, now that we are physically inside Portal B, this will automatically spawn a clone back in Portal A where we started. This is exactly what we want! Whenever you exit the colliders (from either portal) delete the clone.</p>
+    <p> There were some rotational challenges with the clone, but ultimately this part of the project was really fun. We already have world space and local space translations figured out from camera movement so it wasn’t a massive issue. </p>
+
     <h4 align="left">Deadzones</h4>
     <p> Insert text here.</p>
+    <p> I fibbed a bit earlier when talking about cloning. I suggested that there weren’t any problems with the above abstraction, but there kind of is. The texture we write to for the portal is a one sided quad mesh. When you “walk through” that mesh, the sudden change is very jarring. Unfortunately, our halfway calculation to determine when to teleport you allows a couple frames of this jarring transition when you’ve just passed halfway (so the other side of the quad) but you still haven’t teleported to the other portal.</p>
+    <p> How do you fix this? Deadzones! Basically we just adjust the “halfway” point of the portal to be slightly early relative to the quad’s normal. This makes it so you teleport a few frames earlier and get to avoid those jarring frames.</p>
+    <p> There is also a deadzone on the other side of the portal that is CAUSED by this deadzone. If you directly teleported to where the clone was given the above fix, you’d actually teleport ALREADY PASSED HALFWAY on the other portal, causing some weird back and forth teleportation issues. So we created another deadzone for teleporting that teleports you slightly more forward than directly where the clone is. It’s critical that this deadzone be larger than the previous, or you will always be passed halfway when you teleport.</p>
+
     <h4 align="left">Cross Section Shader</h4>
     <p> Insert text here.</p>
+    <p> Turns out I actually fibbed twice. When you create the clone on the other side, you only want to see half of the clone. In fact, you only want to see the half that is PREVIOUS HALFWAY on Portal A and B. I feel it helps me understand if I imagine sticking my arm through a portal. If you use the cloning implementation you would just have two arms on both portals. You need to cut different respective halves depending on which side you are on.</p>
+    <p> But Paxtan, you said we can’t cut GameObjects in half in Unity??? This one was a truth. Unfortunately, you can’t actually cut the object in half, so what you need to do is define a shader that takes in a plane as input and only renders things on one side of the plane.</p>
+    <p> This seems like it should be really easy to do, but it was actually very annoying. We took the shader from the Unity store, but unfortunately shaders aren’t really instanced. We can’t give 5 objects this shader and give each one their own plane and normal, because shaders are meant to be something that goes vertex by vertex or pixel by pixel without specific input for that object. Without getting super specific, we solved this by basically just keeping two copies of the shader alive and disabled in the scene when not in use and we attach it to the object that is being teleported right when interacting with the collider. This works because we should only ever need two of these shaders at one given time. </p>
+
     <h4 align="left">Portal and Object Scaling</h4>
     <p> Insert text here.</p>
+    <p> One of the reasons we did this project is that we wanted to add a twist to the original portal game that Valve created. We thought a fun way to do this was to add some kind of scaling. </p>
+    <p> Imagine you move through a 1x1 square portal into a 2x2 portal….. What should happen? We think you should get bigger. So we made that system with our portals! You can pair portals of different size and transform yourself by moving through them.</p>
+    <p> Now there are a couple of theoretical issues with this that we ran into… but I’m only going to talk about the most interesting one. What should you SEE when looking through a 1x1 portal into a 2x2 portal? </p>
+    <p> Whenever we were thinking about implementation specifics, it was always helpful to treat the portals as two halves of a window that you could stick back to back to understand what you should be able to see and be able to do. But now we have windows of different sizes??? There are a bunch of different ways to solve this. Originally, we wanted to maintain symmetry to the player by promising that WHAT YOU SEE THROUGH THE PORTAL is what you would see when WALKING THROUGH THE PORTAL. Unfortunately, when we implemented this it just didn’t look good. I know this isn’t a satisfying answer, but when we made a system that basically scaled the image to map the corners of the portal together (the same as the promise above) things just felt…. Wrong.</p>
+    <p> So we broke that promise and basically went back to our old system. When you look through a portal of size 1x1 into a portal of size 2x2, it’s exactly the same as the “window” implementation described earlier. You basically just get to see a subset of the 2x2 portal when looking through the 1x1 and you get to see more than the size of the 1x1 when looking through the 2x2. This looks the best by far, even though it’s symmetrically unsatisfying.</p>
+    <p> There were also a couple issues with determining whether we wanted to scale area or volume, but we decided that volume scales the player too quickly and decided to stick with surface area which plays a lot better than volume.</p>
+
+    <hr />
 
     <h3 align="left">4. Portal Creation</h3>
-    <p> Insert text here.</p>
+    <h4 align="left">Line of Sight</h4>
+    <p> Most of this section is working with raycasting, planes, and vectors. To start off with, we know that the user will need to be able to select surfaces or points in the scene in order to create portals in-game. By creating a “line of sight” raycast, we can shoot a ray from the user’s position towards the direction of wherever the mouse position is. We can check if this ray hits any colliders at a certain range, or simply choose the point at the end of the ray. This line of sight is illustrated by rendering a line between two points: the user’s position and the ray’s hit or end point.
+    </p>
+
+    <h4 align="left">Defining Plane with 2 Points and Norm</h4>
+    <p>
+      We wanted the player to be able to create a portal by selecting two points on any surface or in air, which would then be outlined as a rectangle, and then be turned into a portal. Finding the other two points of this rectangle was a little difficult to figure out at first. We tried a number of different solutions, but ran into certain constraints (let’s assume the corner points are i and j):
+<br><br>
+We can’t create a rectangle with the other two points that are i’s y value and j’s x value, for example, because this is located in a 3D space and we have to work with a z-value. We would have to base the last two points off of the norm.
+<br>
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+            <td>
+                <img src="images/a.png" align="middle" width="400px" />
+            </td>
+        </tr>
+        <br />
+
+    </table>
+</div>
+
+<br>
+We tried creating two vectors that would be orthogonal to the norm so that we can create a rectangle. This worked… but there are many many vectors that exist that would be orthogonal to the norm, so this doesn’t work quite right. They should be parallel to the ground.
+(Left is what happened, right is what we want.)
+<br>
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+            <td>
+                <img src="images/b.png" align="middle" width="400px" />
+            </td>
+        </tr>
+        <br />
+
+    </table>
+</div>
+<br>
+<b>Solution:</b> Create two normalized vectors orthogonal to the norm AND some ground vector. These define the width (blue) and height (red) lines. To determine the size of width/height and the last two corner points, place both lines at each corner and check for intersecting points.
+<br>
+
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+            <td>
+                <img src="images/solution.png" align="middle" width="400px" />
+            </td>
+        </tr>
+        <br />
+
+    </table>
+</div>
+<br>
+Unfortunately, we weren’t able to figure out a way to make this without a surface to be laid on top of as we wouldn’t be able to figure out a norm. It also turns out it’s pretty difficult [impossible] to define a plane based on only two points anyway. <sup>[2]</sup>
+
+    </p>
+
 
     <hr />
 
