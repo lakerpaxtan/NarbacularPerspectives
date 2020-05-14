@@ -16,7 +16,7 @@ public class Portal
 
     public GameObject prefabPlane;
 
-    public static int recursiveRenderLimit = 8;
+    public static int recursiveRenderLimit = 1;
 
     public GameObject actualPlane;
     public GameObject reversePlane;
@@ -122,6 +122,7 @@ public class Portal
 
 
     public void updateCameraRelativeToPlayer() {
+        Debug.Log("afsdasdf");
         if (isPaired) {
             
             Vector3 oldReverse = this.otherPortal.reversePlane.transform.localScale;
@@ -129,7 +130,10 @@ public class Portal
             
             Vector3 relativePos = actualPlane.transform.InverseTransformPoint(playerObject.transform.position);
             this.portalCam.transform.position = this.otherPortal.reversePlane.transform.TransformPoint(relativePos);
-
+            Debug.Log(actualPlane.name);
+            if(actualPlane.name == "b0"){
+                Debug.Log(relativePos);
+            }
             Quaternion relativeRot = Quaternion.FromToRotation(-normalVec, this.otherPortal.normalVec);
             this.portalCam.transform.rotation = relativeRot * this.playerObject.transform.rotation;
 
@@ -154,8 +158,11 @@ public class Portal
         portal2.scaleFactor = (portal1.width * portal1.height) / (portal2.width * portal2.height);
         portal1.scaleFactor = (portal2.width * portal2.height) /  (portal1.width * portal1.height);
 
-        //portal2.portalCam.transform.localScale *= portal1.scaleFactor;
-        //portal1.portalCam.transform.localScale *= portal2.scaleFactor;
+        if (portal1.actualPlane.transform.up == portal2.actualPlane.transform.up && !(portal1.normalVec == portal2.normalVec)){
+           
+            portal2.actualPlane.transform.LookAt(portal2.actualPlane.transform.position + portal2.actualPlane.transform.forward, -portal2.actualPlane.transform.up);
+            portal1.actualPlane.transform.LookAt(portal1.actualPlane.transform.position + portal1.actualPlane.transform.forward, -portal1.actualPlane.transform.up);
+        }
 
     }
 
@@ -216,8 +223,7 @@ public class Portal
 
             Vector3 relativePos = actualPlane.transform.InverseTransformPoint(tempPos);
             tempPos = this.otherPortal.reversePlane.transform.TransformPoint(relativePos);
-
-            Quaternion relativeRot = Quaternion.FromToRotation(-normalVec, this.otherPortal.normalVec);
+            Quaternion relativeRot = Quaternion.FromToRotation(-this.actualPlane.transform.forward, this.otherPortal.actualPlane.transform.forward);
             tempRot = relativeRot * tempRot;
 
             this.otherPortal.reversePlane.transform.localScale = oldReverse;
