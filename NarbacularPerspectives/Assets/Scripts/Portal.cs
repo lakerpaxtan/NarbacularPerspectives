@@ -121,32 +121,32 @@ public class Portal
     }
 
 
-    public void updateCameraRelativeToPlayer() {
-        Debug.Log("afsdasdf");
-        if (isPaired) {
+    // public void updateCameraRelativeToPlayer() {
+    //     Debug.Log("afsdasdf");
+    //     if (isPaired) {
             
-            Vector3 oldReverse = this.otherPortal.reversePlane.transform.localScale;
-            this.otherPortal.reversePlane.transform.localScale = this.actualPlane.transform.localScale;
+    //         Vector3 oldReverse = this.otherPortal.reversePlane.transform.localScale;
+    //         this.otherPortal.reversePlane.transform.localScale = this.actualPlane.transform.localScale;
             
-            Vector3 relativePos = actualPlane.transform.InverseTransformPoint(playerObject.transform.position);
-            this.portalCam.transform.position = this.otherPortal.reversePlane.transform.TransformPoint(relativePos);
-            Debug.Log(actualPlane.name);
-            if(actualPlane.name == "b0"){
-                Debug.Log(relativePos);
-            }
-            Quaternion relativeRot = Quaternion.FromToRotation(-normalVec, this.otherPortal.normalVec);
-            this.portalCam.transform.rotation = relativeRot * this.playerObject.transform.rotation;
+    //         Vector3 relativePos = actualPlane.transform.InverseTransformPoint(playerObject.transform.position);
+    //         this.portalCam.transform.position = this.otherPortal.reversePlane.transform.TransformPoint(relativePos);
+    //         Debug.Log(actualPlane.name);
+    //         if(actualPlane.name == "b0"){
+    //             Debug.Log(relativePos);
+    //         }
+    //         Quaternion relativeRot = Quaternion.FromToRotation(-normalVec, this.otherPortal.normalVec);
+    //         this.portalCam.transform.rotation = relativeRot * this.playerObject.transform.rotation;
 
-            if (portalCam.transform.eulerAngles[2] == 180 || portalCam.transform.eulerAngles[2] == -180 || normalVec == otherPortal.normalVec){
-                //Debug.Log("rotate around me daddy");
-                this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.forward, 180);
-            }
+    //         if (portalCam.transform.eulerAngles[2] == 180 || portalCam.transform.eulerAngles[2] == -180 || normalVec == otherPortal.normalVec){
+    //             //Debug.Log("rotate around me daddy");
+    //             this.portalCam.transform.RotateAround(this.otherPortal.actualPlane.transform.position, this.otherPortal.actualPlane.transform.forward, 180);
+    //         }
 
            
-            this.otherPortal.reversePlane.transform.localScale = oldReverse;
+    //         this.otherPortal.reversePlane.transform.localScale = oldReverse;
 
-        }
-    }
+    //     }
+    // }
 
     public static void pairPortals(Portal portal1, Portal portal2) {
         portal1.isPaired = true;

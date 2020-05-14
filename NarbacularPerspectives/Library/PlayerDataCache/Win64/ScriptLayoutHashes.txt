@@ -1,10 +1,10 @@
 Win64
 PlayerPath?
-C:/Users/nemil/cs/cs184/NarbacularPerspectives/NarbacularPerspectives/NarbacularPerspectives.exe
+C:/Users/Pax/Desktop/Narbac/NarbacularPerspectives.exe
 SceneListBegin?
 Assets/Scenes/Main.unity
 Assets/Scenes/SampleScene.unity
-Assets/Tutorial/Tutorial.unity
+Assets/Scenes/Tutorial.unity
 SceneListEnd?
 3c08375166df118bd1801438fc36b92f Unity.TextMeshPro.dll:TMPro.TMP_SelectionCaret
 3748fbad2d474a315bda516b8363a0c5 Assembly-CSharp-firstpass.dll:UnityStandardAssets.Effects.ExtinguishableParticleSystem
@@ -62,7 +62,7 @@ aa165095bcf0f4d99594ea33df01c81b UnityEngine.UI.dll:UnityEngine.UI.Slider
 0fd6822f6177297bd0eb4d83cc7a9030 UnityEngine.UI.dll:UnityEngine.UI.ToggleGroup
 abf1930d8126d0b2e00e9449129a0190 UnityEngine.UI.dll:UnityEngine.EventSystems.TouchInputModule
 64e54c0cbb0177c5ea26f340efb9ff85 UnityEngine.UI.dll:UnityEngine.UI.VerticalLayoutGroup
-22c6cd09a7ac857af56dfcbc17c4b31c Assembly-CSharp.dll:.MenuController
+98505d6d2600bf85b35ce1211454b75a Assembly-CSharp.dll:.MenuController
 d3c76b14a25eebd3a3323dd43297919c Unity.TextMeshPro.dll:TMPro.TMP_InputField
 352455aaadb8c98ff36ead557753abfa Assembly-CSharp-firstpass.dll:UnityStandardAssets.CrossPlatformInput.TiltInput
 cf9f5cf2c3145a37ac07f00e50e460f9 UnityEngine.UI.dll:UnityEngine.UI.AspectRatioFitter
@@ -146,6 +146,7 @@ a8b6c919b2049fcc280823488144371f Assembly-CSharp-firstpass.dll:UnityStandardAsse
 0574135745ea880aa1c1be2f2057ab89 Assembly-CSharp-firstpass.dll:UnityStandardAssets.Utility.ActivateTrigger
 4bd1cc3c85989d2213a9a8fd9d09e63f Assembly-CSharp-firstpass.dll:UnityStandardAssets.CrossPlatformInput.InputAxisScrollbar
 fdd7177da17032ba94d98037cc97bb49 Assembly-CSharp-firstpass.dll:UnityStandardAssets.CrossPlatformInput.AxisTouchButton
+e02d60264cda3bde8318c551211e7927 Assembly-CSharp.dll:.Goal
 b3ab2106268377ffe25dd18ac23dca28 Unity.TextMeshPro.dll:TMPro.TMP_Asset
 f03168bb2f3505e6cc0ba61aff5d31ab Assembly-CSharp-firstpass.dll:UnityStandardAssets.Cameras.LookatTarget
 c88c4199b288356ec3eb2f0d85abc619 Assembly-CSharp-firstpass.dll:UnityStandardAssets.CrossPlatformInput.ButtonHandler
@@ -212,11 +213,10 @@ a8cd58c1680eb5251e5604e560cf89e9 Assembly-CSharp-firstpass.dll:UnityStandardAsse
 44c2d3bd57c3d764412e06815f612aa3 Assembly-CSharp-firstpass.dll:UnityStandardAssets.Effects.Explosive
 d791aa6007fa3640be1164ea75bb087d Unity.TextMeshPro.dll:TMPro.TMP_StyleSheet
 c1058d45ffaf9f4964deadcd2ab86dc4 Assembly-CSharp.dll:.GameManager
+604446596e43d882898917f235eb0de7 Assembly-CSharp.dll:.Tutorial
 df434544c9f7b33d1cc7e635b180d279 Unity.TextMeshPro.dll:TMPro.TextMeshPro
 71bb6a6b6c8f052f948db64c7dd3ca4f Assembly-CSharp.dll:.SliderValueToText
 3165968ba45c74472d279ba04455fccb Unity.TextMeshPro.dll:TMPro.TMP_ColorGradient
 71bb6a6b6c8f052f948db64c7dd3ca4f Assembly-CSharp-firstpass.dll:UnityStandardAssets.Utility.FPSCounter
 8649814970b42d345b89944b862453cc Unity.TextMeshPro.dll:TMPro.TMP_SubMesh
 47cd05cf11ce8beb2fd9a1522f58f5ec Assembly-CSharp-firstpass.dll:UnityStandardAssets.Utility.AutoMobileShaderSwitch
-604446596e43d882898917f235eb0de7 Assembly-CSharp.dll:.Tutorial
-e02d60264cda3bde8318c551211e7927 Assembly-CSharp.dll:.Goal

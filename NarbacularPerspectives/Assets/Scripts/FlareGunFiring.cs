@@ -38,6 +38,8 @@ public class FlareGunFiring : MonoBehaviour
     //In your on collisionenter script, call the onHit from the target if a hit is detected.
     void fireFlareGun(){
         //fireFlareGunSounds();
+        //Cursor.lockState = CursorLockMode.Locked;
+        
         GameObject newBullet = GameObject.Instantiate(flareBullet, this.transform.position + 0.25f * this.transform.forward + 0.1f * this.transform.up, Quaternion.Euler(new Vector3(0,0,0)));
         newBullet.GetComponent<Rigidbody>().AddForce(forceConst * this.transform.forward);
         Destroy(newBullet, 3f);
