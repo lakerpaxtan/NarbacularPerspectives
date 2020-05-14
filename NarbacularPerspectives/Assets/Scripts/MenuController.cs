@@ -12,6 +12,8 @@ public class MenuController : MonoBehaviour
     public GameObject mainText;
     public GameObject button1;
     public GameObject button2;
+    public GameObject slider;
+    public GameObject text;
 
     // Start is called before the first frame update
     void Start()
@@ -21,6 +23,7 @@ public class MenuController : MonoBehaviour
 
         button1.SetActive(false);
         button2.SetActive(false);
+        slider.SetActive(false);
     }
 
     public void StartGame()
@@ -48,10 +51,17 @@ public class MenuController : MonoBehaviour
             yield return new WaitForSeconds(.25f);
         }
 
+        yield return new WaitForSeconds(.5f);
         audioSource.Stop();
         audioSource.pitch = 1;
         button1.SetActive(true);
         button2.SetActive(true);
+        slider.SetActive(true);
     }
 
+    public void UpdateRecursiveLimit(System.Single x)
+    {
+        Portal.recursiveRenderLimit = (int) x;
+        text.GetComponent<TMPro.TextMeshProUGUI>().text = "recursive limit: " + ((int)x).ToString() ;
+    }
 }
